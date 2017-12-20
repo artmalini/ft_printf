@@ -1,4 +1,7 @@
 //#include "ft_printf.h"
+#include <stdarg.h>
+#include <stdlib.h>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
@@ -46,12 +49,12 @@ char		*ft_strrev(char *str)
 
 int 	parse_arg(const char **format, va_list arg)
 {
-	int len;
+	//int len;
 	char *c;
-	int 	i;
+	//int 	i;
 
-	len = 1;
-	i = 0;
+	//len = 1;
+	//i = 0;
 	//printf("**format %c\n", **format);
 	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
 	{
