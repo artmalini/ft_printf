@@ -11,21 +11,22 @@
 # **************************************************************************** #
 
 NAME = libft.a
-GC = gcc
+GC = clang
 CFLAGS = -c -Wall -Wextra -Werror -I libft.h
+#CFLAGS = -c -Wall -Werror -Wextra -I libft.h
 SOURCE = *.c
 OBJ = $(SOURCE:.c=.o)
 
 all: $(NAME)
 
 $(NAME):
-	$(GC) $(CFLAGS) $(SOURCE)
-	ar rc $(NAME) $(OBJ)
+		$(GC) $(CFLAGS) $(SOURCE)
+		ar rc $(NAME) $(OBJ)
 
 clean:
-	rm -f $(OBJ)
+		rm -f $(OBJ)
 
 fclean: clean
-	rm -f $(NAME)
+		rm -f $(NAME)
 
 re: fclean all

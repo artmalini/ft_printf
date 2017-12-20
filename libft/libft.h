@@ -15,11 +15,8 @@
 
 # include <unistd.h>
 # include <stdlib.h>
-# include <string.h>
-
-
-# include <wchar.h>
-# include <stdint.h>
+//# include <string.h>
+# include <bsd/string.h>
 
 typedef struct		s_list
 {

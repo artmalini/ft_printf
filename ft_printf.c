@@ -10,13 +10,13 @@
 #include <locale.h>
 #include <wchar.h>
 #include <string.h>
-/*char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(const char *s, int c)
 {
 	while (*s != c)
 		if (*s++ == 0)
 			return (0);
 	return ((char*)s);
-}*/
+}
 /*size_t		ft_strlen(const char *str)
 {
 	size_t	i;
