@@ -11,10 +11,8 @@
 # **************************************************************************** #
 
 NAME = libft.a
-#GC = gcc
-#CFLAGS = -c -Wall -Wextra -Werror -I libft.h
-GC = clang
-CFLAGS = -c -I libft.h
+GC = gcc
+CFLAGS = -c -Wall -Wextra -Werror -I libft.h
 SOURCE = *.c
 OBJ = $(SOURCE:.c=.o)
 
