@@ -7,7 +7,14 @@
 #include <locale.h>
 #include <wchar.h>
 #include <string.h>
-size_t		ft_strlen(const char *str)
+char	*ft_strchr(const char *s, int c)
+{
+	while (*s != c)
+		if (*s++ == 0)
+			return (0);
+	return ((char*)s);
+}
+/*size_t		ft_strlen(const char *str)
 {
 	size_t	i;
 
@@ -35,7 +42,7 @@ char		*ft_strrev(char *str)
 		p2 -= 1;
 	}
 	return (str);
-}
+}*/
 
 int 	parse_arg(const char **format, va_list arg)
 {
@@ -45,12 +52,17 @@ int 	parse_arg(const char **format, va_list arg)
 
 	len = 1;
 	i = 0;
-	c = va_arg(arg, char *);
-	while (*c != '\0')
+	//printf("**format %c\n", **format);
+	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
 	{
-		write(1, &(*c), 1);
-		c++;
+		c = va_arg(arg, char *);
+		while (*c != '\0')
+		{
+			write(1, &(*c), 1);
+			c++;
+		}
 	}
+	//printf("format %s", *format);
 	//write(1, &c, 1);
 	//if (arg == 's')
 	//{
@@ -75,7 +87,7 @@ int 	ft_printf(const char *format, ...)
 			e = format + 1;
 			//if(!(len = parse_arg(&format, arg)))
 			//	break ;
-			len = parse_arg(&format, arg);
+			len = parse_arg(&e, arg);
 			tick += len;
 			format = e;
 		}
@@ -211,13 +223,5 @@ int 	ft_printf(const char *format, ...)
 
 
 	printf("%.3%");
-	printf("\n");												
-
-	/*unsigned long l;
-	printf("%p", &l);
-	printf("\n");
-
-	unsigned long l;
-	printf("%p", &l);
-	printf("\n");*/														
+	printf("\n");													
 }*/
