@@ -1,8 +1,7 @@
 NAME = libftprintf.a
 INCLUDE = ft_printf.h
-SRC = *.c libft/*.c
-#SRC = *.c
-OBJ = *.o
+SRC = ft_*.c libft/ft_*.c
+OBJ = ft_*.o
 
 all: $(NAME)
 
