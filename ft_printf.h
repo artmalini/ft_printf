@@ -4,7 +4,7 @@
 # include <stdarg.h>
 # include <float.h>
 //# include "../libft/libft.h"
-/*# define MAX(a, b) (a > b ? a : b)
+# define MAX(a, b) (a > b ? a : b)
 
 typedef struct		s_placehold
 {
@@ -45,6 +45,6 @@ char				*ft_printf_itoa_base(t_placehold *p, va_list a_list);
 char				*ft_printf_ctos(t_placehold *p, va_list a_list);
 char				*ft_printf_str(t_placehold *p, size_t n, va_list a_list);
 char				*ft_printf_ftoa(t_placehold *p, va_list a_list);
-long double			ft_uld_get_mantissa(long double ld, short base);*/
+long double			ft_uld_get_mantissa(long double ld, short base);
 
 #endif
