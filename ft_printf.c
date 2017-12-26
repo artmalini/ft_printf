@@ -20,9 +20,10 @@ typedef struct 		s_bone
 	char 			*hex;
 	char 			padding;
 	int 			base;
-	int 			minus;
+	int 			prefix;
 	int 			left;
 	int 			flag;
+	int 			width;
 }					t_bone;
 
 
@@ -125,6 +126,48 @@ char	*ft_strdup(const char *s1)
 	ft_strcpy(mas, s1);
 	return (mas);
 }
+
+
+static int 		prf_putchar(char c)
+{
+	int 	len;
+
+	len = 0;
+	if (c)
+	{
+		write(1, &c, 1);
+		return (1);
+	}
+	return (0);
+}
+
+static int 		prf_nbr_putchar(char c, int nbr)
+{
+	int 	len;
+
+	len = 0;
+	while (nbr-- > 0)
+	{
+		write(1, &c, 1);
+		len++;;
+	}
+	return (len);
+}
+
+static int 		prf_putstr(char *str)
+{
+	int 	len;
+
+	len = 0;
+	if (str)
+	{
+		while (str[len] != '\0')
+			len++;
+		write(1, str, len);
+	}
+	return (len);
+}
+
 
 
 
@@ -316,7 +359,8 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 
 	big = bighigh;
 	str = "0123456789abcdef0123456789ABCDEF";
-	len = 1 + elem->minus;
+	//len = 1 + elem->prefix;
+	len = 1;
 	i = 0;
 	while (big /= elem->base)
 		len++;
@@ -328,12 +372,35 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 		*(itoa + --len) = str[bighigh % elem->base];
 		bighigh /= elem->base;
 	}
-	if (elem->minus)
-		*(itoa + len) = '-';
+	//if (elem->prefix)
+	//	*(itoa + len) = '-';
 	return (itoa);
 }
 
-int		parse_atoi(va_list arg, t_bone *elem)
+
+
+
+int 	print_atoi_flags(t_bone *elem, int str_len)
+{
+	int 	len;
+
+	len = 0;
+	if (elem->padding == ' ')
+	{
+		len = (elem->flag ? prf_putchar(elem->flag) : 0);
+		len += prf_putstr(elem->hex);
+	}
+	if (elem->padding == '0')
+	{
+		len += (elem->flag ? prf_putchar(elem->flag) : 0);
+		len += prf_putstr(elem->hex);
+	}
+	if (!elem->left)
+		len += prf_nbr_putchar(elem->padding, elem->width - str_len);
+	return (len);
+}
+
+int		print_atoi_nbr(va_list arg, t_bone *elem)
 {
 	char 		*str;
 	intmax_t  	bigmin;
@@ -347,7 +414,8 @@ int		parse_atoi(va_list arg, t_bone *elem)
 		if (bigmin < 0)
 		{
 			bighigh = -bigmin;
-			elem->minus = 1;
+			//elem->prefix = 1;
+			elem->flag = '-';
 			//print this minus
 		}
 		else
@@ -357,8 +425,9 @@ int		parse_atoi(va_list arg, t_bone *elem)
 		bighigh = uintmax_cast(va_arg(arg, uintmax_t), elem); //yep
 	str = itoa_base(elem, bighigh);
 	len = ft_strlen(str);
-	//printf("parse_atoi %s %d\n", str, len);
-	print_str_ln(str, len);//print numbers
+
+	len += print_atoi_flags(elem, len);
+	print_str_ln(str, len);												//print numbers
 	free(str);
 	return (len);
 }
@@ -375,12 +444,13 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	}
 	else if (ft_strchr("pdDioOuUxX", elem->type))
 	{
-		if (elem->hex)
-		{
-			print_str_ln(elem->hex, ft_strlen(elem->hex));
-			len += ft_strlen(elem->hex);
-		}
-		len += parse_atoi(arg, elem);
+		//if (elem->hex)
+		//{
+		//	print_str_ln(elem->hex, ft_strlen(elem->hex));
+		//	len += ft_strlen(elem->hex);
+		//}
+		
+		len += print_atoi_nbr(arg, elem);
 	}	
 
 	//}
@@ -431,6 +501,19 @@ void	filllength(const char **format, va_list arg, t_bone *elem)
 	}
 }
 
+void 	fillwidth(const char **format, t_bone *elem)
+{
+	//printf("fillwidth %c\n", **format);
+	if (**format >= '1' && **format <= '9')
+	{
+		while (**format >= '1' && **format <= '9')
+		{
+			elem->width = elem->width * 10 + **format - '0';
+			(*format)++;
+		}
+	}
+}
+
 void	filltype(const char **format, t_bone *elem)
 {
 	//printf("filltype %c\n", **format);
@@ -465,7 +548,7 @@ void			fillhex(const char **format, t_bone *p)
 			p->hex = NULL;
 			return ;
 		}
-		//p->sign = 0;
+		//p->prefix = 0;
 	}
 }
 
@@ -478,7 +561,8 @@ void	fillmas(t_bone *elem)
 	elem->left = 0;
 	elem->flag = 0;
 	elem->base = 10;
-	elem->minus = 0;
+	elem->width = 0;
+	elem->prefix = 0;
 }
 
 void	build_flags(const char **format, va_list arg, t_bone *elem)
@@ -486,7 +570,9 @@ void	build_flags(const char **format, va_list arg, t_bone *elem)
 	fillmas(elem);
 	fillflag(format, elem);
 	filllength(format, arg, elem);
+	fillwidth(format, elem);
 	filltype(format, elem);
+
 	fillhex(format, elem);
 
 	//parse_arg(format, arg, elem);
@@ -635,13 +721,23 @@ int	main(void)
 
 	printf("% d % d", 42, -42);
 	printf("\n");
-	//	ft_printf("% d % d", 42, -42);
-	//printf("\n");
+		ft_printf("% d % d", 42, -42);
+	printf("\n");
 
 	printf("%+d %+d", 42, -42);
 	printf("\n");
+		ft_printf("%+d %+d", 42, -42);
+	printf("\n");
 
 	printf("%05d   %05d", 5, 12345);
+	printf("\n");
+		ft_printf("%05d   %05d", 5, 12345);
+	printf("\n");
+
+
+	printf("%00d   %00d", 5, 12345);
+	printf("\n");
+		ft_printf("%00d   %00d", 5, 12345);
 	printf("\n");
 
 	printf("%*d", 1, 42);
