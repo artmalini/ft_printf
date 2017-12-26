@@ -1,6 +1,8 @@
 //#include "ft_printf.h"
 #include <stdarg.h>
 #include <stdlib.h>
+#include <float.h>
+#include <stdint.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -16,6 +18,11 @@ typedef struct 		s_bone
 	char 			*mod_l;
 	char 			type;
 	char 			*hex;
+	char 			padding;
+	int 			base;
+	int 			minus;
+	int 			left;
+	int 			flag;
 }					t_bone;
 
 
@@ -27,7 +34,8 @@ char	*ft_strchr(const char *s, int c)
 	return ((char*)s);
 }
 /*
-artmalini@gmail.com tokar06
+			p->left = 1;
+			p->padding = ' ';
 
 size_t		ft_strlen(const char *str)
 {
@@ -64,7 +72,7 @@ void	*ft_memalloc(size_t size)
 	char	*v;
 	size_t	i;
 
-	v = (char*)malloc(sizeof(*v) * size);
+	v = (char*)malloc(sizeof(v) * size);
 	if (v)
 	{
 		i = 0;
@@ -107,6 +115,17 @@ int	ft_strcmp(const char *s1, const char *s2)
 		;
 	return ((unsigned char)*s1 - (unsigned char)*s2);
 }
+
+char	*ft_strdup(const char *s1)
+{
+	char	*mas;
+
+	if (!(mas = (char *)malloc(sizeof(*mas) * (ft_strlen(s1) + 1))))
+		return (NULL);
+	ft_strcpy(mas, s1);
+	return (mas);
+}
+
 
 
 
@@ -161,8 +180,10 @@ static char	*ft_wtoc_strndup(wchar_t *w, size_t n)
 	char	*t;
 	int		len;
 
-	if (w && (s = ft_memalloc(sizeof(*s) * (n + 1))))
+printf("%d\n", 1);
+	if (w && (s = ft_memalloc((n + 1))))
 	{
+		printf("%d\n", 2);
 		len = n;
 		while (*w)
 		{
@@ -225,12 +246,94 @@ int		str_print(va_list arg, t_bone *elem)
 				c++;
 			}
 		}
+	free(s);
 	return (len);
 }
 
-//char 	itoa_base(va_list arg, t_bone *elem, uintmax_t bighigh)
+static intmax_t		cast_signed_size_t(intmax_t num)
+{
+	if (sizeof(size_t) == sizeof(short))
+		return ((short)num);
+	else if (sizeof(size_t) == sizeof(int))
+		return ((int)num);
+	else if (sizeof(size_t) == sizeof(long))
+		return ((long long)num);
+	else if (sizeof(size_t) == sizeof(long long))
+		return ((long long)num);
+	else
+		return (num);
+}
 
-int		hex_print(va_list arg, t_bone *elem)
+static intmax_t		intmax_cast(uintmax_t nbr, t_bone *elem)
+{
+	if (elem->mod_l != NULL)
+	{
+		if (!ft_strcmp(elem->mod_l, "hh"))
+			return ((char)nbr);
+		else if (!ft_strcmp(elem->mod_l, "h"))
+			return ((short)nbr);
+		else if (!ft_strcmp(elem->mod_l, "l"))
+			return ((long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "ll"))
+			return ((long long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "j"))
+			return (nbr);
+		else if (!ft_strcmp(elem->mod_l, "z"))
+			return (cast_signed_size_t(nbr));/////////////235 ^^^^^^
+	}
+	return ((int)nbr);
+}
+
+static uintmax_t		uintmax_cast(uintmax_t nbr, t_bone *elem)
+{
+	if (elem->mod_l != NULL)
+	{
+		if (!ft_strcmp(elem->mod_l, "hh"))
+			return ((unsigned char)nbr);
+		else if (!ft_strcmp(elem->mod_l, "h"))
+			return ((unsigned short)nbr);
+		else if (!ft_strcmp(elem->mod_l, "l"))
+			return ((unsigned long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "ll"))
+			return ((unsigned long long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "j"))
+			return (nbr);
+		else if (!ft_strcmp(elem->mod_l, "z"))
+			return ((size_t)nbr);
+	}
+	else if (elem->type == 'p')
+		return (nbr);
+	return ((unsigned int)nbr);
+}
+
+char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
+{
+	uintmax_t 	big;
+	char 	*itoa;
+	char 	*str;
+	size_t 	len;
+	int 	i;
+
+	big = bighigh;
+	str = "0123456789abcdef0123456789ABCDEF";
+	len = 1 + elem->minus;
+	i = 0;
+	while (big /= elem->base)
+		len++;
+	if (!(itoa = (char *)malloc(sizeof(str) * (len + 1))))
+		return (NULL);	
+	*(itoa + len) = '\0';
+	while (i < len || bighigh != 0)
+	{
+		*(itoa + --len) = str[bighigh % elem->base];
+		bighigh /= elem->base;
+	}
+	if (elem->minus)
+		*(itoa + len) = '-';
+	return (itoa);
+}
+
+int		parse_atoi(va_list arg, t_bone *elem)
 {
 	char 		*str;
 	intmax_t  	bigmin;
@@ -244,13 +347,19 @@ int		hex_print(va_list arg, t_bone *elem)
 		if (bigmin < 0)
 		{
 			bighigh = -bigmin;
+			elem->minus = 1;
 			//print this minus
 		}
 		else
 			bighigh = bigmin;
 	}
-	//bighigh = uintmax_cast(va_arg(arg, uintmax_t), elem);; //yep
-	//str = itoa_base(arg, elem, bighigh);
+	else
+		bighigh = uintmax_cast(va_arg(arg, uintmax_t), elem); //yep
+	str = itoa_base(elem, bighigh);
+	len = ft_strlen(str);
+	//printf("parse_atoi %s %d\n", str, len);
+	print_str_ln(str, len);//print numbers
+	free(str);
 	return (len);
 }
 
@@ -266,7 +375,12 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	}
 	else if (ft_strchr("pdDioOuUxX", elem->type))
 	{
-		len += hex_print(arg, elem);
+		if (elem->hex)
+		{
+			print_str_ln(elem->hex, ft_strlen(elem->hex));
+			len += ft_strlen(elem->hex);
+		}
+		len += parse_atoi(arg, elem);
 	}	
 
 	//}
@@ -280,11 +394,27 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	return (len);
 }
 
-void	fillmas(t_bone *elem)
+void	fillflag(const char **f, t_bone *elem)
 {
-	elem->mod_l = NULL;
-	elem->type = 0;
-	elem->hex = 0;
+	while (**f == '+' || **f == ' '|| **f == '-' || **f == '0' || **f == '#')
+	{
+		if (**f == '+')
+			elem->flag = '+';
+		else if (**f == ' ')
+			elem->flag = (elem->flag == 0 ? ' ' : elem->flag);
+		else if (**f == '-')
+		{
+			elem->left = 1;
+			elem->padding = ' ';
+		}
+		else if (**f == '0')
+			elem->padding = (elem->left == 0 ? '0' : elem->padding);
+		else if (**f == '#')
+			elem->hex = "#";
+		else
+			break ;		
+		(*f)++;
+	}
 }
 
 void	filllength(const char **format, va_list arg, t_bone *elem)
@@ -294,18 +424,27 @@ void	filllength(const char **format, va_list arg, t_bone *elem)
 	{
 		(*format)++;//to the next symbol
 		if (elem->mod_l)
-			elem->mod_l = NULL;
-		//elem->mod_l = ft_strdup("l");
-		elem->mod_l = "l";
+			free(elem->mod_l);
+		//elem->mod_l = NULL;
+		elem->mod_l = ft_strdup("l");
+		//elem->mod_l = "l";
 	}
 }
 
 void	filltype(const char **format, t_bone *elem)
 {
-	printf("filltype %c\n", **format);
+	//printf("filltype %c\n", **format);
 	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
 	{
 		elem->type = **format;
+		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
+		elem->base = (ft_strchr("p", **format) ? 16 : elem->base);
+		if (ft_strchr("DOUCS", **format))
+		{
+			if (elem->mod_l)
+				free(elem->mod_l);
+			elem->mod_l = ft_strdup("l");
+		}
 	}
 }
 
@@ -329,9 +468,23 @@ void			fillhex(const char **format, t_bone *p)
 		//p->sign = 0;
 	}
 }
+
+void	fillmas(t_bone *elem)
+{
+	elem->mod_l = NULL;
+	elem->type = 0;
+	//elem->hex = NULL;
+	elem->padding = ' ';
+	elem->left = 0;
+	elem->flag = 0;
+	elem->base = 10;
+	elem->minus = 0;
+}
+
 void	build_flags(const char **format, va_list arg, t_bone *elem)
 {
 	fillmas(elem);
+	fillflag(format, elem);
 	filllength(format, arg, elem);
 	filltype(format, elem);
 	fillhex(format, elem);
@@ -349,17 +502,17 @@ int 	ft_printf(const char *format, ...)
 
 	va_start(arg,format);
 	tick = 0;
-	elem = (t_bone *)malloc(sizeof(elem));
+	elem = malloc(sizeof(*elem));
 	while (*format)
 	{
 		if (*format == '%')
 		{
 			e = format + 1;
-			printf("e %s\n", e);
+			//printf("e %s\n", e);
 			//if(!(len = parse_arg(&format, arg)))
 			//	break ;
 			build_flags(&e, arg, elem);
-			printf("elem->mod_l %s\n", elem->mod_l);
+			//printf("elem->mod_l %s\n", elem->mod_l);
 			len = parse_arg(arg, elem);
 			tick += len;
 			format = e;
@@ -392,7 +545,7 @@ int	main(void)
 	//ft_printf("%c", 0);
 	//printf("\n");
 
-	printf("hell%% %-9u,,,,,,, %s %s", 4242, "MYBRO", "Welcome");
+	/*printf("hell%% %-9u,,,,,,, %s %s", 4242, "MYBRO", "Welcome");
 	printf("\n");
 
 	printf("%c%c", '4', '2');
@@ -403,7 +556,7 @@ int	main(void)
 
 		ft_printf("%ls", L"我是一只猫。");
 	printf("\n");
-			ft_printf("%ls", L"ѠѢ");
+			//ft_printf("%ls", L"ѠѢ");
 	printf("\n");
 
 	ft_printf("yoyo %c %c", "s", "!");
@@ -471,7 +624,7 @@ int	main(void)
 	printf("%ls, %ls", L"暖炉", L"لحم خنزير");
 	printf("\n");
 		ft_printf("%ls, %ls", L"暖炉", L"لحم خنزير");
-	printf("\n");	
+	printf("\n");*/	
 	//printf("% Zoooo");
 	//printf("\n");
 	//	ft_printf("% Zoooo");
@@ -482,6 +635,8 @@ int	main(void)
 
 	printf("% d % d", 42, -42);
 	printf("\n");
+	//	ft_printf("% d % d", 42, -42);
+	//printf("\n");
 
 	printf("%+d %+d", 42, -42);
 	printf("\n");
@@ -509,28 +664,45 @@ int	main(void)
 
 	printf("a%db%dc%dd", 1, -2, 3);
 	printf("\n");
+		ft_printf("a%db%dc%dd", 1, -2, 3);
+	printf("\n");
 
 	printf("%d", INT_MAX);
 	printf("\n");
-
-	printf("%d", INT_MIN);
+		ft_printf("my %d", INT_MAX);
 	printf("\n");
 
-	printf("										p	mem\n");
+	printf("printf %d", INT_MIN);
+	printf("\n");
+		ft_printf("my %d", INT_MIN);
+	printf("\n");
+
+
+	/*printf("										p	mem\n");
 
 	int i;
 	printf("%p", &i);
+	printf("\n");
+		ft_printf("%p", &i);
 	printf("\n");
 
 	unsigned long l;
 	printf("%p", &l);
 	printf("\n");
-
 		ft_printf("%p", &l);
+	printf("\n");
+
+		//ft_printf("%p", &l);
 	printf("\n");
 
 	char *str;
 	printf("%p", &str);
+	printf("\n");
+
+
+	//printf("%lp", 42);
+	//printf("\n");
+		ft_printf("%lp", 42);
 	printf("\n");
 
 
@@ -544,7 +716,7 @@ int	main(void)
 
 
 	printf("%.3%");
-	printf("\n");
+	printf("\n");*/
 
 	//printf("%O", 42);													
 }
