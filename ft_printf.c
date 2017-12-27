@@ -24,6 +24,8 @@ typedef struct 		s_bone
 	int 			left;
 	int 			flag;
 	int 			width;
+	int 			precis;
+	int 			xx;
 }					t_bone;
 
 
@@ -208,7 +210,7 @@ static char	*ft_wctos(wchar_t c)
 		*e++ = ((c >> 6) & 0x3F) | 0x80;
 		*e++ = (c & 0x3F) | 0x80;//63  128
 	}
-	*e++ = '\0';
+	//*e++ = '\0';
 	return (s);
 }
 
@@ -354,17 +356,23 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	uintmax_t 	big;
 	char 	*itoa;
 	char 	*str;
-	size_t 	len;
+	int 	len;
 	int 	i;
+	//printf("itoa_base\n");
 
 	big = bighigh;
 	str = "0123456789abcdef0123456789ABCDEF";
 	//len = 1 + elem->prefix;
-	len = 1;
+	//printf("elem->hex %s\n", elem->hex);
+	str += 16 * elem->xx;
+	//printf("str %s\n", str);
+	len = 1;	
 	i = 0;
 	while (big /= elem->base)
-		len++;
-	if (!(itoa = (char *)malloc(sizeof(str) * (len + 1))))
+		len++;	
+	//printf("elem %zu", (len > elem->precis) ? len : elem->precis);
+	len = (len > elem->precis) ? len : elem->precis;
+	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
 		return (NULL);	
 	*(itoa + len) = '\0';
 	while (i < len || bighigh != 0)
@@ -385,18 +393,27 @@ int 	print_atoi_flags(t_bone *elem, int str_len)
 	int 	len;
 
 	len = 0;
-	if (elem->padding == ' ')
-	{
-		len = (elem->flag ? prf_putchar(elem->flag) : 0);
-		len += prf_putstr(elem->hex);
-	}
 	if (elem->padding == '0')
 	{
+		//printf("elem->padding == '0'\n");
 		len += (elem->flag ? prf_putchar(elem->flag) : 0);
 		len += prf_putstr(elem->hex);
 	}
 	if (!elem->left)
+	{
+		//printf("!elem->left\n");
+		//printf("len %d\n", len);
+		if (elem->flag)
+			str_len++;
 		len += prf_nbr_putchar(elem->padding, elem->width - str_len);
+		//printf("str_len %d\n", str_len);
+	}
+	if (elem->padding == ' ')
+	{
+		//printf("elem->padding == ' '\n");
+		len += (elem->flag ? prf_putchar(elem->flag) : 0);
+		len += prf_putstr(elem->hex);
+	}
 	return (len);
 }
 
@@ -424,10 +441,42 @@ int		print_atoi_nbr(va_list arg, t_bone *elem)
 	else
 		bighigh = uintmax_cast(va_arg(arg, uintmax_t), elem); //yep
 	str = itoa_base(elem, bighigh);
-	len = ft_strlen(str);
+	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);
 
-	len += print_atoi_flags(elem, len);
+	len += print_atoi_flags(elem, len);									//print flags
 	print_str_ln(str, len);												//print numbers
+	free(str);
+	return (len);
+}
+
+
+
+
+
+
+
+
+
+
+int 	print_char(va_list arg, t_bone *elem)
+{
+	int 		len;
+	char 		*str;
+
+	len = 0;
+	//printf("print_char %s\n", elem->mod_l);
+	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
+	{
+		//printf("!ft_strcmp(elem->mod_l\n");
+		str = ft_wctos((wchar_t)va_arg(arg, wint_t));
+	}
+	else
+	{
+		//printf("str %s\n", str); 
+		str = ft_memalloc(2);
+		*str = (unsigned char)va_arg(arg, int);
+	}
+	len = prf_putstr(str);
 	free(str);
 	return (len);
 }
@@ -438,10 +487,15 @@ int 	parse_arg(va_list arg, t_bone *elem)
 
 	len = 0;
 	
-	if (ft_strchr("csS", elem->type))
+	if (ft_strchr("cC", elem->type))
 	{
-		len = str_print(arg, elem);
+		//len = str_print(arg, elem);
+		len = print_char(arg, elem);
 	}
+	//else if (ft_strchr("sS", elem->type))
+	//{
+	//	len +=
+	//}
 	else if (ft_strchr("pdDioOuUxX", elem->type))
 	{
 		//if (elem->hex)
@@ -489,22 +543,56 @@ void	fillflag(const char **f, t_bone *elem)
 
 void	filllength(const char **format, va_list arg, t_bone *elem)
 {
-	//*format++;
-	if (**format == 'l')
+	char 	*str;
+	if (ft_strchr("hljzqL", **format))
 	{
+		//printf("filllength %c\n", **format);
 		(*format)++;//to the next symbol
 		if (elem->mod_l)
 			free(elem->mod_l);
+
 		//elem->mod_l = NULL;
-		elem->mod_l = ft_strdup("l");
+		if (**format == 'h' || **format == 'l')
+		{
+			if (**format == 'h')
+				elem->mod_l = ft_strdup("hh");
+			else
+				elem->mod_l = ft_strdup("ll");
+		}
+		else
+		{
+			//elem->mod_l = (**format == 'h') ? ft_strdup("h") : NULL;
+			//elem->mod_l = ((*format - 1)[0] == 'l') ? ft_strdup("l") : NULL;
+			//elem->mod_l = (**format == 'j') ? ft_strdup("j") : NULL;
+			//elem->mod_l = (**format == 'z') ? ft_strdup("z") : NULL;
+			//elem->mod_l = (**format == 'q') ? ft_strdup("q") : NULL;
+			//elem->mod_l = (**format == 'L') ? ft_strdup("L") : NULL;
+
+			str = ft_memalloc(2);// (char *)(*format - 1)[0];
+			*str = (char)(*format - 1)[0];
+			//printf("st %s\n", str);
+			elem->mod_l = ft_strdup(str);
+			free(str);
+		}
 		//elem->mod_l = "l";
+		//printf("filllength %c\n", (*format - 1)[0]);
 	}
 }
 
-void 	fillwidth(const char **format, t_bone *elem)
+void 	fillwidth(const char **format, va_list arg, t_bone *elem)
 {
 	//printf("fillwidth %c\n", **format);
-	if (**format >= '1' && **format <= '9')
+	if (**format == '*')
+	{
+		if ((elem->width = va_arg(arg, int)) < 0)
+		{
+			elem->width = elem->width * -1;
+			elem->left = 1;
+			elem->padding = ' ';
+		}
+		(*format)++;
+	}
+	else if (**format >= '1' && **format <= '9')
 	{
 		while (**format >= '1' && **format <= '9')
 		{
@@ -514,14 +602,39 @@ void 	fillwidth(const char **format, t_bone *elem)
 	}
 }
 
+void 	fillprecis(const char **format, va_list arg, t_bone *elem)
+{
+	//printf("fillprecis %c\n", **format);
+	if (**format == '.')
+	{
+		elem->precis = 0;
+		//printf("fillprecis %zu\n", elem->precis);
+		(*format)++;
+		if (**format == '*')
+		{
+			elem->precis = va_arg(arg, int);
+			if (elem->precis < 0)
+				elem->precis = -1;
+			(*format)++;
+		}
+		while (**format >= '0' && **format <= '9')
+		{
+			elem->precis = elem->precis * 10 + **format - '0';
+			(*format)++;
+		}
+	}
+	//printf("fillprecis %zu\n", elem->precis);
+}
+
 void	filltype(const char **format, t_bone *elem)
 {
 	//printf("filltype %c\n", **format);
 	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
 	{
 		elem->type = **format;
+		elem->xx = (ft_strchr("oO", **format)) ? 1 : 0;
 		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
-		elem->base = (ft_strchr("p", **format) ? 16 : elem->base);
+		elem->base = (ft_strchr("pxX", **format) ? 16 : elem->base);
 		if (ft_strchr("DOUCS", **format))
 		{
 			if (elem->mod_l)
@@ -533,7 +646,7 @@ void	filltype(const char **format, t_bone *elem)
 
 void			fillhex(const char **format, t_bone *p)
 {
-	if (p->hex || ft_strchr("paA", **format))
+	if (p->hex || ft_strchr("paA", **format))//#
 	{
 		if (ft_strchr("oO", **format))
 			p->hex = "0";
@@ -556,13 +669,15 @@ void	fillmas(t_bone *elem)
 {
 	elem->mod_l = NULL;
 	elem->type = 0;
-	//elem->hex = NULL;
+	elem->hex = NULL;
 	elem->padding = ' ';
 	elem->left = 0;
 	elem->flag = 0;
 	elem->base = 10;
 	elem->width = 0;
+	elem->precis = -1;
 	elem->prefix = 0;
+	elem->xx = 0;
 }
 
 void	build_flags(const char **format, va_list arg, t_bone *elem)
@@ -570,7 +685,8 @@ void	build_flags(const char **format, va_list arg, t_bone *elem)
 	fillmas(elem);
 	fillflag(format, elem);
 	filllength(format, arg, elem);
-	fillwidth(format, elem);
+	fillwidth(format, arg, elem);
+	fillprecis(format, arg, elem);
 	filltype(format, elem);
 
 	fillhex(format, elem);
@@ -614,205 +730,4 @@ int 	ft_printf(const char *format, ...)
 	free(elem);
 	printf("tick %d\n", tick);
 	return (tick);
-}
-
-int	main(void)
-{
-	//setlocale(LC_ALL,""); //для юникода 我是一只猫
-	//0x7fffffff  == 2147483647
-	char *st;
-	st = "Blackbirds";
-	//printf("or:%1$.*2$f\n", 0.2, 42);
-
-	//printf("%s\n", ft_strrev(st));
-	//printf("{%s}", 0);
-	//printf("\n");
-	//ft_printf("yo %s yo %s", "xD", "What's up!");	
-	//ft_printf("%c", 0);
-	//printf("\n");
-
-	/*printf("hell%% %-9u,,,,,,, %s %s", 4242, "MYBRO", "Welcome");
-	printf("\n");
-
-	printf("%c%c", '4', '2');
-	printf("\n");
-
-	printf("%ls", L"我是一只猫。"); //18 symb
-	printf("\n");
-
-		ft_printf("%ls", L"我是一只猫。");
-	printf("\n");
-			//ft_printf("%ls", L"ѠѢ");
-	printf("\n");
-
-	ft_printf("yoyo %c %c", "s", "!");
-	printf("\n");
-	ft_printf("yoyo %s %s", "What's", "UP!");
-
-	printf("\n");
-	printf("%%");
-	printf("\n");
-
-	printf("aa%%bb");
-	printf("\n");
-
-	printf("%%%%%%%%%%");
-	printf("\n");
-
-	printf(".%%.%%.%%.%%.%%.%%.%%.%%.");
-	printf("\n");
-
-	//printf("[{red|ss|f-yellow}%20s{eoc}]{cyan|f-pink}%15d{eoc}\n", "Salut!", 42);
-	printf("										s	string\n");
-	printf("%9s", "abc");
-	printf("\n");
-
-	//printf("{%s}", 0);
-	//printf("\n");
-
-
-	printf("111%s", "222");
-	printf("\n");
-		ft_printf("111%s", "222");
-	printf("\n");
-
-	printf("%s333", "222");
-	printf("\n");
-		ft_printf("%s333", "222");
-	printf("\n");
-
-	printf("111%s333", "222");
-	printf("\n");
-		ft_printf("111%s333", "222");
-	printf("\n");
-
-	printf("111%s333%s555", "222", "444");
-	printf("\n");
-		ft_printf("111%s333%s555", "222", "444");
-	printf("\n");
-
-	printf("111%s333%s555%saaa%sccc","222", "444", "666", "bbb");
-	printf("\n");
-		ft_printf("111%s333%s555%saaa%sccc","222", "444", "666", "bbb");
-	printf("\n");
-
-	printf("111%s333%s555", "222", "444");
-	printf("\n");
-		ft_printf("111%s333%s555", "222", "444");
-	printf("\n");
-
-	printf("%s%s%s%s%s", "1", "2", "3", "4", "5");
-	printf("\n");
-		ft_printf("%s%s%s%s%s", "1", "2", "3", "4", "5");
-	printf("\n");
-
-
-	printf("%ls, %ls", L"暖炉", L"لحم خنزير");
-	printf("\n");
-		ft_printf("%ls, %ls", L"暖炉", L"لحم خنزير");
-	printf("\n");*/	
-	//printf("% Zoooo");
-	//printf("\n");
-	//	ft_printf("% Zoooo");
-	//printf("\n");
-
-
-	printf("										d	dec\n");
-
-	printf("% d % d", 42, -42);
-	printf("\n");
-		ft_printf("% d % d", 42, -42);
-	printf("\n");
-
-	printf("%+d %+d", 42, -42);
-	printf("\n");
-		ft_printf("%+d %+d", 42, -42);
-	printf("\n");
-
-	printf("%05d   %05d", 5, 12345);
-	printf("\n");
-		ft_printf("%05d   %05d", 5, 12345);
-	printf("\n");
-
-
-	printf("%00d   %00d", 5, 12345);
-	printf("\n");
-		ft_printf("%00d   %00d", 5, 12345);
-	printf("\n");
-
-	printf("%*d", 1, 42);
-	printf("\n");
-
-	printf("%2$*1$d", 1, 42);
-	printf("\n");
-
-	printf("%d", 42);
-	printf("\n");
-
-	printf("%d", -42);
-	printf("\n");
-
-	printf("before %d after", 42);
-	printf("\n");
-
-	printf("%d%d%d%d%d", 1, -2, 3, -4, 5);
-	printf("\n");
-
-	printf("a%db%dc%dd", 1, -2, 3);
-	printf("\n");
-		ft_printf("a%db%dc%dd", 1, -2, 3);
-	printf("\n");
-
-	printf("%d", INT_MAX);
-	printf("\n");
-		ft_printf("my %d", INT_MAX);
-	printf("\n");
-
-	printf("printf %d", INT_MIN);
-	printf("\n");
-		ft_printf("my %d", INT_MIN);
-	printf("\n");
-
-
-	/*printf("										p	mem\n");
-
-	int i;
-	printf("%p", &i);
-	printf("\n");
-		ft_printf("%p", &i);
-	printf("\n");
-
-	unsigned long l;
-	printf("%p", &l);
-	printf("\n");
-		ft_printf("%p", &l);
-	printf("\n");
-
-		//ft_printf("%p", &l);
-	printf("\n");
-
-	char *str;
-	printf("%p", &str);
-	printf("\n");
-
-
-	//printf("%lp", 42);
-	//printf("\n");
-		ft_printf("%lp", 42);
-	printf("\n");
-
-
-	printf(" 								FLAGS\n");
-
-	printf("{%+d}", 42);
-	printf("\n");
-
-	printf("%+d", -42);
-	printf("\n");
-
-
-	printf("%.3%");
-	printf("\n");*/
-
-	//printf("%O", 42);													
 }
