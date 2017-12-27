@@ -617,10 +617,13 @@ void 	fillprecis(const char **format, va_list arg, t_bone *elem)
 				elem->precis = -1;
 			(*format)++;
 		}
-		while (**format >= '0' && **format <= '9')
+		else
 		{
-			elem->precis = elem->precis * 10 + **format - '0';
-			(*format)++;
+			while (**format >= '0' && **format <= '9')
+			{
+				elem->precis = elem->precis * 10 + **format - '0';
+				(*format)++;
+			}			
 		}
 	}
 	//printf("fillprecis %zu\n", elem->precis);
@@ -684,9 +687,9 @@ void	build_flags(const char **format, va_list arg, t_bone *elem)
 {
 	fillmas(elem);
 	fillflag(format, elem);
-	filllength(format, arg, elem);
 	fillwidth(format, arg, elem);
 	fillprecis(format, arg, elem);
+	filllength(format, arg, elem);
 	filltype(format, elem);
 
 	fillhex(format, elem);
