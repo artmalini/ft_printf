@@ -95,6 +95,24 @@ char	*ft_strcpy(char *dst, const char *src)
 	return (dst);
 }
 
+char	*ft_strncpy(char *dst, const char *src, size_t len)
+{
+	char	*mas;
+
+	mas = dst;
+	while (*src != '\0' && len > 0)
+	{
+		*mas++ = *src++;
+		--len;
+	}
+	while (len > 0)
+	{
+		*mas++ = '\0';
+		--len;
+	}
+	return (dst);
+}
+
 size_t	ft_strlen(const char *s)
 {
 	size_t n;
@@ -127,6 +145,25 @@ char	*ft_strdup(const char *s1)
 		return (NULL);
 	ft_strcpy(mas, s1);
 	return (mas);
+}
+
+
+
+
+
+static char		*ft_strndup(const char *s1, size_t len)
+{
+	char	*str;
+
+	if (s1)
+	{
+		str = malloc(sizeof(*str) * (len + 1));
+		if (str)
+			str = ft_strncpy(str, s1, len);
+	}
+	else
+		str = NULL;
+	return (str);
 }
 
 
@@ -170,18 +207,14 @@ static int 		prf_putstr(char *str)
 	return (len);
 }
 
-
-
-
-
-
-
-
 void 	print_str_ln(char *str, int nbr)
 {
 	if (*str && nbr)
 		write(1, str, nbr);
 }
+
+
+
 
 //https://ru.wikipedia.org/wiki/UTF-8
 static char	*ft_wctos(wchar_t c)
@@ -225,17 +258,17 @@ static char	*ft_wtoc_strndup(wchar_t *w, size_t n)
 	char	*t;
 	int		len;
 
-printf("%d\n", 1);
+//printf("%d\n", 1);
 	if (w && (s = ft_memalloc((n + 1))))
 	{
-		printf("%d\n", 2);
+		//printf("%d\n", 2);
 		len = n;
 		while (*w)
 		{
 			t = ft_wctos(*w++);
-			printf("ft_wtoc_strndup t %s len n %zu ft_strlen(t) %zu\n", t, n, ft_strlen(t));
+			//printf("ft_wtoc_strndup t %s len n %zu ft_strlen(t) %zu\n", t, n, ft_strlen(t));
 			len -= ft_strlen(t);
-			printf("ft_wtoc_strndup len %d\n", len);
+			//printf("ft_wtoc_strndup len %d\n", len);
 			if (len < 0)
 				break ;
 			s = ft_strcat(s, t);
@@ -262,7 +295,7 @@ static char	*ft_wtoc_strdup(wchar_t *w)
 	if (t)
 		while (*t++)
 			len += sizeof(wchar_t);
-		printf("ft_wtoc_strdup %zu\n", len);
+		//printf("ft_wtoc_strdup %zu\n", len);
 	return (ft_wtoc_strndup(w, len));
 }
 
@@ -396,7 +429,7 @@ int 	print_atoi_flags(t_bone *elem, int str_len)
 	if (elem->padding == '0')
 	{
 		//printf("elem->padding == '0'\n");
-		len += (elem->flag ? prf_putchar(elem->flag) : 0);
+		len = (elem->flag ? prf_putchar(elem->flag) : 0);
 		len += prf_putstr(elem->hex);
 	}
 	if (!elem->left)
@@ -425,6 +458,7 @@ int		print_atoi_nbr(va_list arg, t_bone *elem)
 	int 	len;
 
 	len = 1;
+	str = NULL;
 	if (ft_strchr("dDi", elem->type))
 	{
 		bigmin = intmax_cast(va_arg(arg, intmax_t), elem);
@@ -464,6 +498,7 @@ int 	print_char(va_list arg, t_bone *elem)
 	char 		*str;
 
 	len = 0;
+	str = NULL;
 	//printf("print_char %s\n", elem->mod_l);
 	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
 	{
@@ -473,9 +508,37 @@ int 	print_char(va_list arg, t_bone *elem)
 	else
 	{
 		//printf("str %s\n", str); 
-		str = ft_memalloc(2);
+		str = ft_memalloc(sizeof(*str) * 2);
 		*str = (unsigned char)va_arg(arg, int);
 	}
+	len = prf_putstr(str);
+	free(str);
+	return (len);
+}
+
+int 	print_str_char(va_list arg, t_bone *elem)
+{
+	int 		len;
+	char 		*str;
+
+	len = 0;
+	str = NULL;
+	//printf("print_char %s\n", elem->mod_l);
+	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
+	{
+		if (elem->precis >= 0)
+			str = ft_wtoc_strndup(va_arg(arg, wchar_t*), elem->precis);
+		else
+			str = ft_wtoc_strdup(va_arg(arg, wchar_t*));
+	}
+	else
+	{
+		if (elem->precis >= 0)
+			str = ft_strndup(va_arg(arg, char*), elem->precis);
+		else
+			str = ft_strdup(va_arg(arg, char*));
+	}
+	//printf("str %s\n", str);
 	len = prf_putstr(str);
 	free(str);
 	return (len);
@@ -492,10 +555,10 @@ int 	parse_arg(va_list arg, t_bone *elem)
 		//len = str_print(arg, elem);
 		len = print_char(arg, elem);
 	}
-	//else if (ft_strchr("sS", elem->type))
-	//{
-	//	len +=
-	//}
+	else if (ft_strchr("sS", elem->type))
+	{
+		len += print_str_char(arg, elem);
+	}
 	else if (ft_strchr("pdDioOuUxX", elem->type))
 	{
 		//if (elem->hex)
@@ -558,6 +621,7 @@ void	filllength(const char **format, va_list arg, t_bone *elem)
 				elem->mod_l = ft_strdup("hh");
 			else
 				elem->mod_l = ft_strdup("ll");
+			//printf("elem->mod_l %s\n", elem->mod_l);
 		}
 		else
 		{
@@ -594,7 +658,7 @@ void 	fillwidth(const char **format, va_list arg, t_bone *elem)
 	}
 	else if (**format >= '1' && **format <= '9')
 	{
-		while (**format >= '1' && **format <= '9')
+		while (**format >= '0' && **format <= '9')
 		{
 			elem->width = elem->width * 10 + **format - '0';
 			(*format)++;
@@ -693,8 +757,6 @@ void	build_flags(const char **format, va_list arg, t_bone *elem)
 	filltype(format, elem);
 
 	fillhex(format, elem);
-
-	//parse_arg(format, arg, elem);
 }
 
 int 	ft_printf(const char *format, ...)
@@ -729,6 +791,7 @@ int 	ft_printf(const char *format, ...)
 			write(1, &(*format), 1);
 			tick++;
 		}
+		//free(elem->mod_l);
 		format += *format ? 1 : 0;
 	}
 	va_end(arg);
