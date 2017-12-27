@@ -444,7 +444,7 @@ int		print_atoi_nbr(va_list arg, t_bone *elem)
 	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);
 
 	len += print_atoi_flags(elem, len);									//print flags
-	print_str_ln(str, len);												//print numbers
+	print_str_ln(str, ft_strlen(str));												//print numbers
 	free(str);
 	return (len);
 }
@@ -716,6 +716,8 @@ int 	ft_printf(const char *format, ...)
 			build_flags(&e, arg, elem);
 			//printf("elem->mod_l %s\n", elem->mod_l);
 			len = parse_arg(arg, elem);
+			if (elem->mod_l)
+				free(elem->mod_l);
 			tick += len;
 			format = e;
 		}
