@@ -622,6 +622,7 @@ void	filllength(const char **format, va_list arg, t_bone *elem)
 			else
 				elem->mod_l = ft_strdup("ll");
 			//printf("elem->mod_l %s\n", elem->mod_l);
+			(*format)++;
 		}
 		else
 		{
