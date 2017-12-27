@@ -728,6 +728,6 @@ int 	ft_printf(const char *format, ...)
 	}
 	va_end(arg);
 	free(elem);
-	printf("tick %d\n", tick);
+	//printf("tick %d\n", tick);
 	return (tick);
 }
