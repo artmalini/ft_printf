@@ -242,7 +242,7 @@ static char	*ft_wctos(wchar_t c)
 		*e++ = ((c >> 6) & 0x3F) | 0x80;
 		*e++ = (c & 0x3F) | 0x80;//63  128
 	}
-	//*e++ = '\0';
+	*e++ = '\0';
 	return (s);
 }
 
@@ -512,7 +512,7 @@ char 	*print_char(va_list arg, t_bone *elem)
 	//len = 0;
 	str = NULL;
 	//printf("print_char %s\n", elem->mod_l);
-	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l") && MB_CUR_MAX > 1)
+	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
 	{
 		//printf("!ft_strcmp(elem->mod_l\n");
 		str = ft_wctos((wchar_t)va_arg(arg, wint_t));
@@ -520,7 +520,7 @@ char 	*print_char(va_list arg, t_bone *elem)
 	else
 	{
 		//printf("str %s\n", str); 
-		str = ft_memalloc(sizeof(*str) * 2);
+		str = ft_memalloc(2);
 		*str = (unsigned char)va_arg(arg, int);
 	}
 	//len = prf_putstr(str);
