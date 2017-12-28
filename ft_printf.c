@@ -555,9 +555,9 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 		else
 			str = ft_strdup(va_arg(arg, char*));
 	}
-	if (!s && p->precis != 0)
+	if (!str && p->precis != 0)
 		str = ft_strdup("(null)");
-	else if (!s)
+	else if (!str)
 		str = ft_memalloc(sizeof(*str));
 	//printf("str %s\n", str);
 	//len = prf_putstr(str);
