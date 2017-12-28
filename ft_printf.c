@@ -555,6 +555,8 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 		else
 			str = ft_strdup(va_arg(arg, char*));
 	}
+	if(!str)
+		str = ft_strdup("(null)");
 	//printf("str %s\n", str);
 	//len = prf_putstr(str);
 	//free(str);
