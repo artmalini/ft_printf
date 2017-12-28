@@ -447,14 +447,14 @@ int 	print_atoi_flags(char *str, t_bone *elem, int str_len)
 		len += (elem->flag ? prf_putchar(elem->flag) : 0);
 		len += prf_putstr(elem->hex);
 	}
-	print_str_ln(str, ft_strlen(str));
+	print_str_ln(str, ft_strlen(str)); ////print numbers
 	if (elem->left)
 	{
 		//printf("elem->left\n");
 		//printf("len %d\n", len);
 
-		//if (elem->flag)
-		//	str_len++;
+		if (elem->flag)
+			str_len++;
 		len += prf_nbr_putchar(elem->padding, elem->width - str_len);
 		//printf("str_len %d\n", str_len);
 	}
@@ -488,7 +488,7 @@ int		print_atoi_nbr(va_list arg, t_bone *elem)
 	else
 		bighigh = uintmax_cast(va_arg(arg, uintmax_t), elem); //yep
 	str = itoa_base(elem, bighigh);
-	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);
+	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);	//count str length to output
 
 	len += print_atoi_flags(str, elem, len);									//print flags
 	//print_str_ln(str, ft_strlen(str));												//print numbers
@@ -703,7 +703,7 @@ void	filltype(const char **format, t_bone *elem)
 	//printf("filltype %c\n", **format);
 	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
 	{		
-		elem->xx = (ft_strchr("oO", **format)) ? 1 : 0;
+		elem->xx = (ft_strchr("XEGA", **format)) ? 1 : 0;
 		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
 		elem->base = (ft_strchr("pxX", **format) ? 16 : elem->base);
 		if (ft_strchr("DOUCS", **format))
