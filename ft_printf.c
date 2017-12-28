@@ -505,12 +505,12 @@ int		print_atoi_nbr(va_list arg, t_bone *elem)
 
 
 
-int 	print_char(va_list arg, t_bone *elem)
+char 	*print_char(va_list arg, t_bone *elem)
 {
-	int 		len;
+	//int 		len;
 	char 		*str;
 
-	len = 0;
+	//len = 0;
 	str = NULL;
 	//printf("print_char %s\n", elem->mod_l);
 	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
@@ -524,37 +524,40 @@ int 	print_char(va_list arg, t_bone *elem)
 		str = ft_memalloc(sizeof(*str) * 2);
 		*str = (unsigned char)va_arg(arg, int);
 	}
-	len = prf_putstr(str);
-	free(str);
-	return (len);
+	//len = prf_putstr(str);
+	//free(str);
+	//return (len);
+	return (str);
 }
 
-int 	print_str_char(va_list arg, t_bone *elem)
+char 	*print_str_char(va_list arg, t_bone *elem)
 {
-	int 		len;
+	//int 		len;
 	char 		*str;
 
-	len = 0;
+	//len = 0;
 	str = NULL;
 	//printf("print_char %s\n", elem->mod_l);
 	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
 	{
 		if (elem->precis >= 0)
-			str = ft_wtoc_strndup(va_arg(arg, wchar_t*), elem->precis);
+			str = ft_wtoc_strndup(va_arg(arg, wchar_t*), (size_t)elem->precis);
 		else
 			str = ft_wtoc_strdup(va_arg(arg, wchar_t*));
 	}
 	else
 	{
+		//printf("n %zu\n", (size_t)elem->precis);
 		if (elem->precis >= 0)
-			str = ft_strndup(va_arg(arg, char*), elem->precis);
+			str = ft_strndup(va_arg(arg, char*), (size_t)elem->precis);
 		else
 			str = ft_strdup(va_arg(arg, char*));
 	}
 	//printf("str %s\n", str);
-	len = prf_putstr(str);
-	free(str);
-	return (len);
+	//len = prf_putstr(str);
+	//free(str);
+	//return (len);
+	return (str);
 }
 
 int 	parse_arg(va_list arg, t_bone *elem)
@@ -566,12 +569,17 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	str = NULL;	
 	if (ft_strchr("cC", elem->type))
 	{
-		//len = str_print(arg, elem);
-		len = print_char(arg, elem);
+		//len = print_char(arg, elem);
+		str = print_char(arg, elem);
+		len += ft_strlen(str);
+		len += print_atoi_flags(str, elem, len);
 	}
 	else if (ft_strchr("sS", elem->type))
 	{
-		len += print_str_char(arg, elem);
+		str = print_str_char(arg, elem);
+		len += ft_strlen(str);
+		len += print_atoi_flags(str, elem, len);
+		//len += print_str_char(arg, elem);
 	}
 	else if (ft_strchr("pdDioOuUxX", elem->type))
 	{		
@@ -583,6 +591,8 @@ int 	parse_arg(va_list arg, t_bone *elem)
 		len = prf_putstr(str);
 		free(str);
 	}
+	//if (str)
+	//	free(str);
 	return (len);
 }
 
@@ -715,7 +725,7 @@ void	filltype(const char **format, t_bone *elem)
 	}	
 	elem->type = **format;
 	//elem->flag = (!ft_strchr("dDifFfFeEgGaA", **format) ? 0 : elem->flag);
-	elem->padding = (ft_strchr("pdDioOuUxXb", **format)) ? ' ' : elem->padding;
+	elem->padding = ((ft_strchr("pdDioOuUxXb", **format)) && (elem->precis >= 0)) ? ' ' : elem->padding;
 }
 
 void			fillhex(const char **format, t_bone *p)
