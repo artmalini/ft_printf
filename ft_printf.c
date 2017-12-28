@@ -136,7 +136,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)*s1 - (unsigned char)*s2);
 }
 
-char	*ft_strdup(const char *s1)
+/*char	*ft_strdup(const char *s1)
 {
 	char	*mas;
 
@@ -144,8 +144,23 @@ char	*ft_strdup(const char *s1)
 		return (NULL);
 	ft_strcpy(mas, s1);
 	return (mas);
-}
+}*/
+char	*ft_strdup(const char *s1)
+{
+	int		len;
+	char	*str;
 
+	if (s1)
+	{
+		len = ft_strlen(s1);
+		str = malloc(sizeof(*str) * len + 1);
+		if (str)
+			str = ft_strcpy(str, s1);
+	}
+	else
+		str = NULL;
+	return (str);
+}
 
 
 
@@ -555,10 +570,10 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 		else
 			str = ft_strdup(va_arg(arg, char*));
 	}
-	//if (!str && elem->precis != 0)
-	//	str = ft_strdup("(null)");
-	//else if (!str)
-	//	str = ft_memalloc(sizeof(*str));
+	if (!str && elem->precis != 0)
+		str = ft_strdup("(null)");
+	else if (!str)
+		str = ft_memalloc(sizeof(*str));
 	//printf("str %s\n", str);
 	//len = prf_putstr(str);
 	//free(str);
@@ -577,7 +592,7 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	{
 		//len = print_char(arg, elem);
 		str = print_char(arg, elem);
-		len += ((ft_strlen(str) == 0) ? 1 : ft_strlen(str)) + ft_strlen(elem->hex) + (elem->flag != 0 ? 1 : 0);;
+		len += (ft_strlen(str) == 0) ? 1 : ft_strlen(str);// + ft_strlen(elem->hex) + (elem->flag != 0 ? 1 : 0);;
 		len += print_atoi_flags(str, elem, len);
 	}
 	else if (ft_strchr("sS", elem->type))
