@@ -512,7 +512,7 @@ char 	*print_char(va_list arg, t_bone *elem)
 	//len = 0;
 	str = NULL;
 	//printf("print_char %s\n", elem->mod_l);
-	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
+	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l") && MB_CUR_MAX > 1)
 	{
 		//printf("!ft_strcmp(elem->mod_l\n");
 		str = ft_wctos((wchar_t)va_arg(arg, wint_t));
