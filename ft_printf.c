@@ -547,9 +547,10 @@ int 	print_str_char(va_list arg, t_bone *elem)
 int 	parse_arg(va_list arg, t_bone *elem)
 {
 	int len;
+	char 	*str;
 
 	len = 0;
-	
+	str = NULL;	
 	if (ft_strchr("cC", elem->type))
 	{
 		//len = str_print(arg, elem);
@@ -560,24 +561,15 @@ int 	parse_arg(va_list arg, t_bone *elem)
 		len += print_str_char(arg, elem);
 	}
 	else if (ft_strchr("pdDioOuUxX", elem->type))
-	{
-		//if (elem->hex)
-		//{
-		//	print_str_ln(elem->hex, ft_strlen(elem->hex));
-		//	len += ft_strlen(elem->hex);
-		//}
-		
+	{		
 		len += print_atoi_nbr(arg, elem);
-	}	
-
-	//}
-
-	//printf("format %s", *format);
-	//write(1, &c, 1);
-	//if (arg == 's')
-	//{
-		//printf("%s", "ok");
-	//}
+	}
+	else if ((str = ft_memalloc(2)))
+	{
+		*str = elem->type;
+		len = prf_putstr(str);
+		free(str);
+	}
 	return (len);
 }
 
@@ -699,7 +691,6 @@ void	filltype(const char **format, t_bone *elem)
 	//printf("filltype %c\n", **format);
 	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
 	{
-		elem->type = **format;
 		elem->xx = (ft_strchr("oO", **format)) ? 1 : 0;
 		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
 		elem->base = (ft_strchr("pxX", **format) ? 16 : elem->base);
@@ -710,6 +701,7 @@ void	filltype(const char **format, t_bone *elem)
 			elem->mod_l = ft_strdup("l");
 		}
 	}
+	elem->type = **format;
 }
 
 void			fillhex(const char **format, t_bone *p)
