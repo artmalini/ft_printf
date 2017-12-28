@@ -555,10 +555,10 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 		else
 			str = ft_strdup(va_arg(arg, char*));
 	}
-	if (!str && elem->precis != 0)
-		str = ft_strdup("(null)");
-	else if (!str)
-		str = ft_memalloc(sizeof(*str));
+	//if (!str && elem->precis != 0)
+	//	str = ft_strdup("(null)");
+	//else if (!str)
+	//	str = ft_memalloc(sizeof(*str));
 	//printf("str %s\n", str);
 	//len = prf_putstr(str);
 	//free(str);
@@ -577,7 +577,7 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	{
 		//len = print_char(arg, elem);
 		str = print_char(arg, elem);
-		len += ft_strlen(str);
+		len += (ft_strlen(str) == 0) ? 1 : ft_strlen(str);
 		len += print_atoi_flags(str, elem, len);
 	}
 	else if (ft_strchr("sS", elem->type))
