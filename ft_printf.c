@@ -95,21 +95,20 @@ char	*ft_strcpy(char *dst, const char *src)
 	return (dst);
 }
 
-char	*ft_strncpy(char *dst, const char *src, size_t len)
+static char	*ft_strncpy(char *dst, const char *src, size_t len) // Мой с этим не работает
 {
-	char	*mas;
+	char *d;
 
-	mas = dst;
-	while (*src != '\0' && len > 0)
+	d = dst;
+	while (len && *src)
 	{
-		*mas++ = *src++;
-		--len;
+		len--;
+		*d++ = *src++;
 	}
-	while (len > 0)
-	{
-		*mas++ = '\0';
-		--len;
-	}
+	if (len == 0)
+		len++;
+	while (len--)
+		*d = 0;
 	return (dst);
 }
 
@@ -154,10 +153,10 @@ char	*ft_strdup(const char *s1)
 static char		*ft_strndup(const char *s1, size_t len)
 {
 	char	*str;
-
+	//printf("ft_strndup len %zu\n", len);
 	if (s1)
 	{
-		str = malloc(sizeof(*str) * (len + 1));
+		str = (char *)malloc(sizeof(char) * (len + 1));
 		if (str)
 			str = ft_strncpy(str, s1, len);
 	}
@@ -534,10 +533,11 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 {
 	//int 		len;
 	char 		*str;
+	size_t 	n;
 
 	//len = 0;
-	str = NULL;
-	//printf("print_char %s\n", elem->mod_l);
+	//str = NULL;
+	//printf("elem->mod_l %s\n", elem->mod_l);
 	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
 	{
 		if (elem->precis >= 0)
@@ -549,7 +549,7 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 	{
 		//printf("n %zu\n", (size_t)elem->precis);
 		if (elem->precis >= 0)
-			str = ft_strndup(va_arg(arg, char*), (size_t)elem->precis);
+			str = ft_strndup(va_arg(arg, char*), (size_t)elem->precis);// Мой с этим не работает
 		else
 			str = ft_strdup(va_arg(arg, char*));
 	}
