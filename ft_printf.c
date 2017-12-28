@@ -715,6 +715,7 @@ void	filltype(const char **format, t_bone *elem)
 	}	
 	elem->type = **format;
 	//elem->flag = (!ft_strchr("dDifFfFeEgGaA", **format) ? 0 : elem->flag);
+	p->padding = (ft_strchr("pdDioOuUxXb", *e)) ? ' ' : p->padding;
 }
 
 void			fillhex(const char **format, t_bone *p)
