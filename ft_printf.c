@@ -188,7 +188,7 @@ static int 		prf_nbr_putchar(char c, int nbr)
 	while (nbr-- > 0)
 	{
 		write(1, &c, 1);
-		len++;;
+		len++;
 	}
 	return (len);
 }
@@ -421,7 +421,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 
 
 
-int 	print_atoi_flags(t_bone *elem, int str_len)
+int 	print_atoi_flags(char *str, t_bone *elem, int str_len)
 {
 	int 	len;
 
@@ -447,6 +447,19 @@ int 	print_atoi_flags(t_bone *elem, int str_len)
 		len += (elem->flag ? prf_putchar(elem->flag) : 0);
 		len += prf_putstr(elem->hex);
 	}
+	print_str_ln(str, ft_strlen(str));
+	if (elem->left)
+	{
+		//printf("elem->left\n");
+		//printf("len %d\n", len);
+
+		//if (elem->flag)
+		//	str_len++;
+		len += prf_nbr_putchar(elem->padding, elem->width - str_len);
+		//printf("str_len %d\n", str_len);
+	}
+	//printf("elem->left %d elem->width %d elem->flag %d\n", elem->left, elem->width, elem->flag);
+	free(str);
 	return (len);
 }
 
@@ -477,9 +490,9 @@ int		print_atoi_nbr(va_list arg, t_bone *elem)
 	str = itoa_base(elem, bighigh);
 	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);
 
-	len += print_atoi_flags(elem, len);									//print flags
-	print_str_ln(str, ft_strlen(str));												//print numbers
-	free(str);
+	len += print_atoi_flags(str, elem, len);									//print flags
+	//print_str_ln(str, ft_strlen(str));												//print numbers
+	//free(str);
 	return (len);
 }
 
@@ -589,11 +602,10 @@ void	fillflag(const char **f, t_bone *elem)
 		else if (**f == '0')
 			elem->padding = (elem->left == 0 ? '0' : elem->padding);
 		else if (**f == '#')
-			elem->hex = "#";
-		else
-			break ;		
+			elem->hex = "#";		
 		(*f)++;
 	}
+	//printf("elem->left %d\n", elem->left);
 }
 
 void	filllength(const char **format, va_list arg, t_bone *elem)
@@ -690,7 +702,7 @@ void	filltype(const char **format, t_bone *elem)
 {
 	//printf("filltype %c\n", **format);
 	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
-	{
+	{		
 		elem->xx = (ft_strchr("oO", **format)) ? 1 : 0;
 		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
 		elem->base = (ft_strchr("pxX", **format) ? 16 : elem->base);
@@ -700,8 +712,9 @@ void	filltype(const char **format, t_bone *elem)
 				free(elem->mod_l);
 			elem->mod_l = ft_strdup("l");
 		}
-	}
+	}	
 	elem->type = **format;
+	//elem->flag = (!ft_strchr("dDifFfFeEgGaA", **format) ? 0 : elem->flag);
 }
 
 void			fillhex(const char **format, t_bone *p)
@@ -721,7 +734,7 @@ void			fillhex(const char **format, t_bone *p)
 			p->hex = NULL;
 			return ;
 		}
-		//p->prefix = 0;
+		//p->flag = 0;
 	}
 }
 
@@ -789,6 +802,6 @@ int 	ft_printf(const char *format, ...)
 	}
 	va_end(arg);
 	free(elem);
-	//printf("tick %d\n", tick);
+	printf("tick %d\n", tick);
 	return (tick);
 }
