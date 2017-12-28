@@ -577,7 +577,7 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	{
 		//len = print_char(arg, elem);
 		str = print_char(arg, elem);
-		len += (ft_strlen(str) == 0) ? 1 : ft_strlen(str);
+		len += ((ft_strlen(str) == 0) ? 1 : ft_strlen(str)) + ft_strlen(elem->hex) + (elem->flag != 0 ? 1 : 0);;
 		len += print_atoi_flags(str, elem, len);
 	}
 	else if (ft_strchr("sS", elem->type))
