@@ -486,6 +486,8 @@ int		print_atoi_nbr(va_list arg, t_bone *elem)
 	}
 	else
 		bighigh = uintmax_cast(va_arg(arg, uintmax_t), elem); //yep
+	if (bighigh == 0 && ft_strchr("poO", elem->type))
+		elem->hex = NULL;
 	str = itoa_base(elem, bighigh);
 	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);	//count str length to output
 
