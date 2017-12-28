@@ -527,7 +527,7 @@ char 	*print_char(va_list arg, t_bone *elem)
 	char 		*str;
 
 	//len = 0;
-	str = NULL;
+	//str = NULL;
 	//printf("print_char %s\n", elem->mod_l);
 	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l") && MB_CUR_MAX > 1)
 	{
