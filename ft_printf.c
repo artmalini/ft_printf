@@ -242,21 +242,21 @@ static char	*ft_wctos(wchar_t c)
 		*e++ = c;
 	else if (c <= 0x7FF)//2047
 	{
-		*e++ = (c >> 6) | 0xC0;//0xC0 192
-		*e++ = (c & 0x3F) | 0x80;//0x3F 63 0x80 128
+		*e++ = (c >> 6) + 0xC0;//0xC0 192
+		*e++ = (c & 0x3F) + 0x80;//0x3F 63 0x80 128
 	}
 	else if (c <= 0xFFFF)//65535
 	{
-		*e++ = (c >> 12) | 0xE0;//0xE0 224
-		*e++ = ((c >> 6) & 0x3F) | 0x80;
-		*e++ = (c & 0x3F) | 0x80;
+		*e++ = (c >> 12) + 0xE0;//0xE0 224
+		*e++ = ((c >> 6) & 0x3F) + 0x80;
+		*e++ = (c & 0x3F) + 0x80;
 	}
 	else if (c <= 0x10FFFF)//1114111
 	{
-		*e++ = (c >> 18) | 0xF0;//0xF0 240
-		*e++ = ((c >> 12) & 0x3F) | 0x80;
-		*e++ = ((c >> 6) & 0x3F) | 0x80;
-		*e++ = (c & 0x3F) | 0x80;//63  128
+		*e++ = (c >> 18) + 0xF0;//0xF0 240
+		*e++ = ((c >> 12) & 0x3F) + 0x80;
+		*e++ = ((c >> 6) & 0x3F) + 0x80;
+		*e++ = (c & 0x3F) + 0x80;//63  128
 	}
 	//*e++ = '\0';
 	return (s);
@@ -274,7 +274,7 @@ static char	*ft_wtoc_strndup(wchar_t *w, size_t n)
 	int		len;
 
 //printf("%d\n", 1);
-	if (w && (s = ft_memalloc((n + 1))))
+	if (w && (s = ft_memalloc(sizeof(*s) * (n + 1))))
 	{
 		//printf("%d\n", 2);
 		len = n;
