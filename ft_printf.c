@@ -253,6 +253,27 @@ void	print_str_ln(char *str, size_t nbr)
 	if (*str != '\0' && nbr)
 		write(1, str, nbr);
 }*/
+void	ft_strrev(char *s)
+{
+	char *e;
+	char t;
+
+	if (!s)
+		return ;
+	e = s;
+	while (*e)
+		e++;
+	e--;
+	while (s < e)
+	{
+		t = *s;
+		*s++ = *e;
+		*e-- = t;
+	}
+}
+
+
+
 
 
 
@@ -448,6 +469,41 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	len = (len > elem->precis) ? len : elem->precis;
 	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
 		return (NULL);	
+	while (i < len || bighigh != 0)
+	{
+		*(itoa + i++) = str[bighigh % elem->base];
+		bighigh /= elem->base;
+	}
+	*(itoa + i) = 0;
+	//if (elem->prefix)
+	//	*(itoa + len) = '-';
+	ft_strrev(itoa);
+	return (itoa);
+}
+
+/*char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
+{
+	uintmax_t 	big;
+	char 	*itoa;
+	char 	*str;
+	int 	len;
+	int 	i;
+	//printf("itoa_base\n");
+
+	big = bighigh;
+	str = "0123456789abcdef0123456789ABCDEF";
+	//len = 1 + elem->prefix;
+	//printf("elem->hex %s\n", elem->hex);
+	str += 16 * elem->xx;
+	//printf("str %s\n", str);
+	len = 1;	
+	i = 0;
+	while (big /= elem->base)
+		len++;	
+	//printf("elem %zu", (len > elem->precis) ? len : elem->precis);
+	len = (len > elem->precis) ? len : elem->precis;
+	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
+		return (NULL);	
 	*(itoa + len) = '\0';
 	while (i < len || bighigh != 0)
 	{
@@ -457,9 +513,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	//if (elem->prefix)
 	//	*(itoa + len) = '-';
 	return (itoa);
-}
-
-
+}*/
 
 
 int 	print_atoi_flags(char *str, t_bone *elem, int str_len)
