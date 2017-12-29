@@ -1,58 +1,101 @@
-#include <stdlib.h>
+//#include "ft_printf.h"
 #include <stdarg.h>
+#include <stdlib.h>
 #include <float.h>
-//#include "./libft/libft.h"
-#include <wchar.h>
-
 #include <stdint.h>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
-#define MAX(a, b) (a > b ? a : b)
+#include <stdlib.h>
 
-typedef struct		s_placehold
+//#include <locale.h>
+#include <wchar.h>
+#include <string.h>
+
+typedef struct 		s_bone
 {
-	int				leftalign;
-	char			sign;
-	char			padding;
-	char			*hash;
-	int				width;
-	int				prec;
-	char			*length;
-	char			type;
-	unsigned short	base;
-	int				signed_num;
-	unsigned short	uppercase;
-	int				sigfig;
-	short			exp_base;
-	char			exp_char;
-	short			exp_len;	
-}					t_placehold;
-
-int					ft_printf(const char *format, ...);
-int					ft_vfdprintf(int fd, const char *format, va_list a_list);
-int					ft_fdprintf(int fd, const char *format, ...);
-void				set_hash(t_placehold *p, const char *e);
-void				eval_fields(t_placehold *p, const char **e, va_list a_list);
-size_t				print_eval(int fd, t_placehold *p, va_list a_list,
-						size_t cnt);
-void				set_type_field(t_placehold *p, const char *e);
-void				set_flag_field(t_placehold *p, const char **e);
-void				set_width_field(t_placehold *p, const char **e,
-						va_list a_list);
-void				set_precision_field(t_placehold *p, const char **e,
-						va_list a_list);
-void				set_length_field(t_placehold *p, const char **e);
-char				*ft_uitoa_base(uintmax_t value, unsigned short base,
-						unsigned short uppercase, int digits);
-char				*ft_printf_itoa_base(t_placehold *p, va_list a_list);
-char				*ft_printf_ctos(t_placehold *p, va_list a_list);
-char				*ft_printf_str(t_placehold *p, size_t n, va_list a_list);
-char				*ft_printf_ftoa(t_placehold *p, va_list a_list);
-long double			ft_uld_get_mantissa(long double ld, short base);
+	char 			*mod_l;
+	char 			type;
+	char 			*hex;
+	char 			padding;
+	int 			base;
+	int 			prefix;
+	int 			left;
+	int 			flag;
+	int 			width;
+	int 			precis;
+	int 			xx;
+}					t_bone;
 
 
-char	*ft_strncpy(char *dst, const char *src, size_t len)
+char	*ft_strchr(const char *s, int c)
+{
+	while (*s != c)
+		if (*s++ == 0)
+			return (0);
+	return ((char*)s);
+}
+/*
+			p->left = 1;
+			p->padding = ' ';
+
+size_t		ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i])
+		i += 1;
+	return (i);
+}
+
+char		*ft_strrev(char *str)
+{
+	char	*p1;
+	char	*p2;
+
+	if (!str || !*str)
+		return (str);
+	p1 = str;
+	p2 = str + ft_strlen(str) - 1;
+	while (p2 > p1)
+	{
+		*p1 ^= *p2;
+		*p2 ^= *p1;
+		*p1 ^= *p2;
+		p1 += 1;
+		p2 -= 1;
+	}
+	return (str);
+}*/
+
+void	*ft_memalloc(size_t size)
+{
+	char	*v;
+	size_t	i;
+
+	v = (char*)malloc(sizeof(v) * size);
+	if (v)
+	{
+		i = 0;
+		while (i < size)
+			v[i++] = 0;
+	}
+	return (v);
+}
+
+char	*ft_strcpy(char *dst, const char *src)
+{
+	char *d;
+
+	d = dst;
+	while ((*d++ = *src++) != 0)
+		;
+	return (dst);
+}
+
+static char	*ft_strncpy(char *dst, const char *src, size_t len) // Мой с этим не работает
 {
 	char *d;
 
@@ -69,57 +112,6 @@ char	*ft_strncpy(char *dst, const char *src, size_t len)
 	return (dst);
 }
 
-char	*ft_strchr(const char *s, int c)
-{
-	while (*s != c)
-		if (*s++ == 0)
-			return (0);
-	return ((char*)s);
-}
-
-void	*ft_memalloc(size_t size)
-{
-	char	*v;
-	size_t	i;
-
-	v = (char*)malloc(sizeof(*v) * size);
-	if (v)
-	{
-		i = 0;
-		while (i < size)
-			v[i++] = 0;
-	}
-	return (v);
-}
-
-void	*ft_memset(void *b, int c, size_t len)
-{
-	unsigned char *s;
-
-	s = b;
-	while (len--)
-		*s++ = (unsigned char)c;
-	return (b);
-}
-
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && *s1 == *s2 && s1++ && s2++)
-		;
-	return ((unsigned char)*s1 - (unsigned char)*s2);
-}
-
-char	*ft_strcpy(char *dst, const char *src)
-{
-	char *d;
-
-	d = dst;
-	while ((*d++ = *src++) != 0)
-		;
-	return (dst);
-}
-
-
 size_t	ft_strlen(const char *s)
 {
 	size_t n;
@@ -131,7 +123,31 @@ size_t	ft_strlen(const char *s)
 	return (n);
 }
 
-char	*ft_strdup(const char *s1)
+char	*ft_strcat(char *s1, const char *s2)
+{
+	ft_strcpy(&s1[ft_strlen(s1)], s2);
+	return (s1);
+}
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	while (*s1 && *s1 == *s2 && s1++ && s2++)
+		;
+	return ((unsigned char)*s1 - (unsigned char)*s2);
+}
+
+/*char	*ft_strdup(const char *s1)			//?? Тоже не работает
+{
+	char	*mas;
+
+	if (!(mas = (char *)malloc(sizeof(*mas) * (ft_strlen(s1) + 1))))
+		return (NULL);
+	ft_strcpy(mas, s1);
+	return (mas);
+}*/
+
+
+char	*ft_strdup(const char *s1)			//?? Т
 {
 	int		len;
 	char	*str;
@@ -148,55 +164,15 @@ char	*ft_strdup(const char *s1)
 	return (str);
 }
 
-char	*ft_strcat(char *s1, const char *s2)
-{
-	ft_strcpy(&s1[ft_strlen(s1)], s2);
-	return (s1);
-}
 
-char	*ft_strjoin_free(char *s1, char *s2)
-{
-	char *str;
 
-	if (!s1 || !s2)
-		return (NULL);
-	str = (char*)malloc(sizeof(*str) * (ft_strlen(s1) + ft_strlen(s2)) + 1);
-	if (str)
-	{
-		*str = 0;
-		str = ft_strcat(ft_strcat(str, (char*)s1), (char*)s2);
-		free(s1);
-		free(s2);
-	}
-	return (str);
-}
-
-void	ft_strrev(char *s)
-{
-	char *e;
-	char t;
-
-	if (!s)
-		return ;
-	e = s;
-	while (*e)
-		e++;
-	e--;
-	while (s < e)
-	{
-		t = *s;
-		*s++ = *e;
-		*e-- = t;
-	}
-}
-
-char	*ft_strndup(const char *s1, size_t len)
+static char		*ft_strndup(const char *s1, size_t len)
 {
 	char	*str;
-
+	//printf("ft_strndup len %zu\n", len);
 	if (s1)
 	{
-		str = malloc(sizeof(*str) * (len + 1));
+		str = (char *)malloc(sizeof(char) * (len + 1));
 		if (str)
 			str = ft_strncpy(str, s1, len);
 	}
@@ -205,206 +181,84 @@ char	*ft_strndup(const char *s1, size_t len)
 	return (str);
 }
 
-char	*ft_strucase(char *s)
-{
-	char *str;
 
-	str = s;
-	if (s)
+static int 		prf_putchar(char c)
+{
+	//int 	len;
+
+	//len = 0;
+	if (c)
 	{
-		while (*s)
-		{
-			if (*s >= 'a' && *s <= 'z')
-				*s -= 32;
-			s++;
-		}
-	}
-	return (str);
-}
-
-char	*ft_chrrepl_trailing(char *s, char c, char r)
-{
-	char *str;
-	char a;
-
-	str = s;
-	if (s && *s)
-	{
-		a = *s;
-		*s = 0;
-		s++;
-		while (*s)
-			s++;
-		if (str - s)
-			while (*(--s) == c)
-				*s = r;
-		*str = a;
-	}
-	return (str);
-}
-
-unsigned short	ft_uintmax_len(uintmax_t num, unsigned short base)
-{
-	unsigned int	i;
-
-	i = 0;
-	while (num != 0 || i == 0)
-	{
-		i++;
-		num = num / base;
-	}
-	return (i);
-}
-
-
-
-
-
-
-
-int	ft_putchar_fd(char c, int fd)  //мой void
-{
-	write(fd, &c, 1);
-	return (1);
-}
-
-int	ft_putnstr_fd(int fd, char *s, int n) //нету
-{
-	//printf("ft_putnstr_fd\n");
-	int len;
-
-	len = 0;
-	if (s && n)
-	{
-		//printf("write ft_putnstr_fd\n");
-		len = ft_strlen(s);
-		if (n < len)
-			len = n;
-		write(fd, s, len);
-	}
-	return (len);
-}
-
-int	ft_putnchar_fd(int fd, char c, int n) //нету
-{
-	//printf("ft_putnchar_fd\n");
-	int count;
-	count = 0;
-	while (n-- > 0)
-	{
-		//printf("ft_putnchar_fd\n");
-		write(fd, &c, 1);
-		count++;
-	}
-	return (count);
-}
-
-int	ft_putstr_fd(char const *s, int fd) //мой void
-{
-	int len;
-
-	len = 0;
-	if (s)
-	{
-		while (s[len])
-			len++;
-		write(fd, s, len);
-	}
-	return (len);
-}
-
-/*const char	*ft_strchr(const char *s, int c)
-{
-	while (*s != c)
-		if (*s++ == 0)
-			return (0);
-	return ((char*)s);
-}*/
-
-
-
-
-
-
-
-
-
-
-
-long double	ft_ld_integerpower(long double nb, long double power)
-{
-	long double i;
-	long double num;
-
-	num = nb;
-	if (power < 0)
-		return (0);
-	else if (power == 0)
+		write(1, &c, 1);
 		return (1);
-	i = 1;
-	while (i++ < power)
-		num *= nb;
-	return (num);
-}
-
-
-
-long double	ft_uld_get_mantissa(long double ld, short base)
-{
-	long double	u;
-	uintmax_t	d;
-
-	u = 1;
-	while (u < ld / ft_ld_integerpower(base, 8))
-		u *= ft_ld_integerpower(base, 8);
-	while (ld >= 1)
-	{
-		d = (uintmax_t)(ld / u);
-		ld -= d * u;
-		u /= ft_ld_integerpower(base, 8);
 	}
-	return (ld);
+	return (0);
 }
 
-
-int	ft_fdprintf(int fd, const char *format, ...)
+static int 		prf_nbr_putchar(char c, int nbr)
 {
-	va_list a_list;
-	size_t	count;
+	int 	len;
 
-	va_start(a_list, format);
-	count = ft_vfdprintf(fd, format, a_list);
-	va_end(a_list);
-	return (count);
+	len = 0;
+	while (nbr-- > 0)
+	{
+		write(1, &c, 1);
+		len++;
+	}
+	return (len);
+}
+
+static int 		prf_putstr(char *str)
+{
+	int 	len;
+
+	len = 0;
+	if (str)
+	{
+		while (str[len] != '\0')
+			len++;
+		write(1, str, len);
+	}
+	return (len);
+}
+
+void 	print_str_ln(char *str, int nbr)
+{
+	if (*str && nbr)
+		write(1, str, nbr);
 }
 
 
+
+
+//https://ru.wikipedia.org/wiki/UTF-8
 static char	*ft_wctos(wchar_t c)
 {
 	char	*s;
 	char	*e;
 
 	s = ft_memalloc(sizeof(*s) * 5);
-	if ((e = s) && c <= 0x7F)
+	if ((e = s) && c <= 0x7F)//127
 		*e++ = c;
-	else if (c <= 0x7FF)
+	else if (c <= 0x7FF)//2047
 	{
-		*e++ = (c >> 6) + 0xC0;
-		*e++ = (c & 0x3F) + 0x80;
+		*e++ = (c >> 6) | 0xC0;//0xC0 192
+		*e++ = (c & 0x3F) | 0x80;//0x3F 63 0x80 128
 	}
-	else if (c <= 0xFFFF)
+	else if (c <= 0xFFFF)//65535
 	{
-		*e++ = (c >> 12) + 0xE0;
-		*e++ = ((c >> 6) & 0x3F) + 0x80;
-		*e++ = (c & 0x3F) + 0x80;
+		*e++ = (c >> 12) | 0xE0;//0xE0 224
+		*e++ = ((c >> 6) & 0x3F) | 0x80;
+		*e++ = (c & 0x3F) | 0x80;
 	}
-	else if (c <= 0x10FFFF)
+	else if (c <= 0x10FFFF)//1114111
 	{
-		*e++ = (c >> 18) + 0xF0;
-		*e++ = ((c >> 12) & 0x3F) + 0x80;
-		*e++ = ((c >> 6) & 0x3F) + 0x80;
-		*e++ = (c & 0x3F) + 0x80;
+		*e++ = (c >> 18) | 0xF0;//0xF0 240
+		*e++ = ((c >> 12) & 0x3F) | 0x80;
+		*e++ = ((c >> 6) & 0x3F) | 0x80;
+		*e++ = (c & 0x3F) | 0x80;//63  128
 	}
+	//*e++ = '\0';
 	return (s);
 }
 
@@ -419,13 +273,17 @@ static char	*ft_wtoc_strndup(wchar_t *w, size_t n)
 	char	*t;
 	int		len;
 
-	if (w && (s = ft_memalloc(sizeof(*s) * (n + 1))))
+//printf("%d\n", 1);
+	if (w && (s = ft_memalloc((n + 1))))
 	{
+		//printf("%d\n", 2);
 		len = n;
 		while (*w)
 		{
 			t = ft_wctos(*w++);
+			//printf("ft_wtoc_strndup t %s len n %zu ft_strlen(t) %zu\n", t, n, ft_strlen(t));
 			len -= ft_strlen(t);
+			//printf("ft_wtoc_strndup len %d\n", len);
 			if (len < 0)
 				break ;
 			s = ft_strcat(s, t);
@@ -452,190 +310,38 @@ static char	*ft_wtoc_strdup(wchar_t *w)
 	if (t)
 		while (*t++)
 			len += sizeof(wchar_t);
+		//printf("ft_wtoc_strdup %zu\n", len);
 	return (ft_wtoc_strndup(w, len));
 }
 
-/*
-** Handles %cC
-*/
-
-char		*ft_printf_ctos(t_placehold *p, va_list a_list)
+int		str_print(va_list arg, t_bone *elem)
 {
+	char *c;
 	char	*s;
+	int len;
 
-	if (p->length != NULL && !ft_strcmp(p->length, "l") && MB_CUR_MAX > 1)
-		s = ft_wctos((wchar_t)va_arg(a_list, wint_t));
-	else
-	{
-		s = ft_memalloc(sizeof(*s) * 2);
-		*s = (unsigned char)va_arg(a_list, int);
-	}
-	return (s);
-}
+	len = 0;
 
-/*
-** Handles %sS
-*/
-
-char		*ft_printf_str(t_placehold *p, size_t n, va_list a_list)
-{
-	char	*s;
-
-	if (p->length != NULL && !ft_strcmp(p->length, "l"))
-	{
-		//printf("483 ft_printf_str p->length %s p->prec %d\n", p->length, p->prec);
-		if (p->prec >= 0)
-			s = ft_wtoc_strndup(va_arg(a_list, wchar_t*), n);
+		if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
+		{
+			s = ft_wtoc_strdup(va_arg(arg, wchar_t*));
+			len = ft_strlen(s);
+			print_str_ln(s, len);
+			//printf("XDDDDDDDDDD %s len %d\n", s, len);
+		}
 		else
-			s = ft_wtoc_strdup(va_arg(a_list, wchar_t*));
-		//printf("500 %s\n", s);
-	}
-	else
-	{
-		//printf("n %zu\n", n);
-		if (p->prec >= 0)
-			s = ft_strndup(va_arg(a_list, char*), n);
-		else
-			s = ft_strdup(va_arg(a_list, char*));
-	}
-	if (!s && p->prec != 0)
-		s = ft_strdup("(null)");
-	else if (!s)
-		s = ft_memalloc(sizeof(*s));	
-	//printf("str %s\n", s);
-	return (s);
+		{
+			c = va_arg(arg, char *);
+			while (*c != '\0')
+			{
+				write(1, &(*c), 1);
+				len++;
+				c++;
+			}
+		}
+	free(s);
+	return (len);
 }
-
-static long double	ft_uld_badround(long double ld, int precision, short base)
-{
-	long double	m;
-	long double	c;
-	int			i;
-
-	if ((i = precision) != -1)
-	{
-		m = ft_uld_get_mantissa(ld, base);
-		c = ld - m;
-		while (i-- > 0)
-			m *= base;
-		if (ft_uld_get_mantissa(m, base) >= .5)
-			m = m - ft_uld_get_mantissa(m, base) + 1.1;
-		else
-			m = m - ft_uld_get_mantissa(m, base) + .1;
-		while (++i < precision)
-			m /= base;
-		return (c + m);
-	}
-	return (ld);
-}
-
-static char			*ft_uld_mantissatoa(long double ld, int precision,
-						short base)
-{
-	int		i;
-	char	*s;
-
-	s = ft_memalloc(sizeof(*s));
-	while (precision > 0 || (precision < 0 && ld))
-	{
-		if (precision)
-			precision--;
-		i = ld * base;
-		s = ft_strjoin_free(s, ft_uitoa_base(i, base, 0, 1));
-		ld *= base;
-		ld -= i;
-	}
-	return (s);
-}
-
-static char			*ft_uld_itoa(long double ld, int sigfig, int precision,
-						short base)
-{
-	long double	u;
-	uintmax_t	d;
-	char		*s;
-
-	u = 1;
-	while (u < ld / base)
-		u *= base;
-	s = ft_memalloc(sizeof(*s));
-	while (sigfig && (u >= 1 || !ft_strlen(s)))
-	{
-		d = (uintmax_t)(ld / u);
-		s = ft_strjoin_free(s, ft_uitoa_base(d, base, 0, 1));
-		if (!(*s == '0' && ft_strlen(s) == 1))
-			sigfig--;
-		ld -= d * u;
-		u /= base;
-	}
-	if (sigfig && (precision > 0 || precision == -1) && ld)
-	{
-		precision = sigfig > 0 ? sigfig : precision;
-		s = ft_strjoin_free(s, ft_strdup("."));
-		s = ft_strjoin_free(s, ft_uld_mantissatoa(ld, precision, base));
-	}
-	return (s);
-}
-
-static char			*ft_printf_ftoa_handler(t_placehold *p, long double ld)
-{
-	long double	d;
-	char		*s;
-	short		c;
-
-	if (ft_strchr("fF", p->type))
-		s = ft_uld_itoa(ft_uld_badround(ld, p->prec, p->base), p->sigfig,
-			p->prec, p->base);
-	else if ((d = 1))
-	{
-		c = 0;
-		if (ld >= 1)
-			while (ld / d >= p->exp_base && ++c)
-				d *= p->exp_base;
-		else
-			while (ld && ld / d < 1 && ++c)
-				d /= p->exp_base;
-		s = ft_uld_itoa(ft_uld_badround(ld / d, p->prec, p->base), p->sigfig,
-			p->prec, p->base);
-		s = ft_strjoin_free(s, ft_strdup(ft_memset(ft_memalloc(2), p->exp_char,
-			1)));
-		s = ft_strjoin_free(s, (ld >= 1 || ld == 0) ? ft_strdup("+") :
-			ft_strdup("-"));
-		s = ft_strjoin_free(s, ft_uitoa_base(c, 10, 0, p->exp_len));
-	}
-	return (s = p->uppercase ? ft_strucase(s) : s);
-}
-
-char				*ft_printf_ftoa(t_placehold *p, va_list a_list)
-{
-	long double	ld;
-	char		*s;
-
-	ld = 0;
-	if (p->length && !ft_strcmp(p->length, "L"))
-		ld = va_arg(a_list, long double);
-	else
-		ld += va_arg(a_list, double);
-	p->sign = (ld < 0 ? '-' : p->sign);
-	ld = (ld < 0 ? -ld : ld);
-	p->prec = (p->prec == -1 && !ft_strchr("aA", p->type) ? 6 : p->prec);
-	if (ft_strchr("gG", p->type))
-	{
-		p->prec = (p->prec == 0 ? 1 : p->prec);
-		p->sigfig = p->prec;
-		if ((ld && ld < .00001) || ft_ld_integerpower(p->base, p->prec) <= ld)
-			p->type -= 2;
-		else
-			p->type -= 1;
-		s = ft_printf_ftoa_handler(p, ld);
-		s = ft_chrrepl_trailing(ft_chrrepl_trailing(s, '0', 0), '.', 0);
-	}
-	else
-		s = ft_printf_ftoa_handler(p, ld);
-	return (s);
-}
-
-
 
 static intmax_t		cast_signed_size_t(intmax_t num)
 {
@@ -651,395 +357,487 @@ static intmax_t		cast_signed_size_t(intmax_t num)
 		return (num);
 }
 
-static intmax_t		cast_intmax(intmax_t num, t_placehold *p)
+static intmax_t		intmax_cast(uintmax_t nbr, t_bone *elem)
 {
-	if (p->length != NULL)
+	if (elem->mod_l != NULL)
 	{
-		if (!ft_strcmp(p->length, "hh"))
-			return ((char)num);
-		else if (!ft_strcmp(p->length, "h"))
-			return ((short)num);
-		else if (!ft_strcmp(p->length, "l"))
-			return ((long)num);
-		else if (!ft_strcmp(p->length, "ll"))
-			return ((long long)num);
-		else if (!ft_strcmp(p->length, "j"))
-			return (num);
-		else if (!ft_strcmp(p->length, "z"))
-			return (cast_signed_size_t(num));
+		if (!ft_strcmp(elem->mod_l, "hh"))
+			return ((char)nbr);
+		else if (!ft_strcmp(elem->mod_l, "h"))
+			return ((short)nbr);
+		else if (!ft_strcmp(elem->mod_l, "l"))
+			return ((long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "ll"))
+			return ((long long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "j"))
+			return (nbr);
+		else if (!ft_strcmp(elem->mod_l, "z"))
+			return (cast_signed_size_t(nbr));/////////////235 ^^^^^^
 	}
-	return ((int)num);
+	return ((int)nbr);
 }
 
-static uintmax_t	cast_uintmax(uintmax_t num, t_placehold *p)
+static uintmax_t		uintmax_cast(uintmax_t nbr, t_bone *elem)
 {
-	if (p->length != NULL)
+	if (elem->mod_l != NULL)
 	{
-		if (!ft_strcmp(p->length, "hh"))
-			return ((unsigned char)num);
-		else if (!ft_strcmp(p->length, "h"))
-			return ((unsigned short)num);
-		else if (!ft_strcmp(p->length, "l"))
-			return ((unsigned long)num);
-		else if (!ft_strcmp(p->length, "ll"))
-			return ((unsigned long long)num);
-		else if (!ft_strcmp(p->length, "j"))
-			return (num);
-		else if (!ft_strcmp(p->length, "z"))
-			return ((size_t)num);
+		if (!ft_strcmp(elem->mod_l, "hh"))
+			return ((unsigned char)nbr);
+		else if (!ft_strcmp(elem->mod_l, "h"))
+			return ((unsigned short)nbr);
+		else if (!ft_strcmp(elem->mod_l, "l"))
+			return ((unsigned long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "ll"))
+			return ((unsigned long long)nbr);
+		else if (!ft_strcmp(elem->mod_l, "j"))
+			return (nbr);
+		else if (!ft_strcmp(elem->mod_l, "z"))
+			return ((size_t)nbr);
 	}
-	else if (p->type == 'p')
-		return (num);
-	return ((unsigned int)num);
+	else if (elem->type == 'p')
+		return (nbr);
+	return ((unsigned int)nbr);
 }
 
-char				*ft_uitoa_base(uintmax_t value, unsigned short base,
-						unsigned short uppercase, int digits)//p->uppercase = (ft_strchr("XEGA", *e) ? 1 : p->uppercase);
+char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 {
-	char	*ret;
-	char	*dig;
-	int		i;
+	uintmax_t 	big;
+	char 	*itoa;
+	char 	*str;
+	int 	len;
+	int 	i;
+	//printf("itoa_base\n");
 
-	dig = "0123456789abcdef0123456789ABCDEF";//16 * uppercase для второго паттерна
-	dig += 16 * uppercase;
-	if ((ret = malloc(sizeof(*ret) * (MAX(ft_uintmax_len(value, base), digits)
-		+ 1))))
+	big = bighigh;
+	str = "0123456789abcdef0123456789ABCDEF";
+	//len = 1 + elem->prefix;
+	//printf("elem->hex %s\n", elem->hex);
+	str += 16 * elem->xx;
+	//printf("str %s\n", str);
+	len = 1;	
+	i = 0;
+	while (big /= elem->base)
+		len++;	
+	//printf("elem %zu", (len > elem->precis) ? len : elem->precis);
+	len = (len > elem->precis) ? len : elem->precis;
+	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
+		return (NULL);	
+	*(itoa + len) = '\0';
+	while (i < len || bighigh != 0)
 	{
-		i = 0;
-		while (value != 0 || (i == 0 && digits != 0) || i < digits)
+		*(itoa + --len) = str[bighigh % elem->base];
+		bighigh /= elem->base;
+	}
+	//if (elem->prefix)
+	//	*(itoa + len) = '-';
+	return (itoa);
+}
+
+
+
+
+int 	print_atoi_flags(char *str, t_bone *elem, int str_len)
+{
+	int 	len;
+
+	len = 0;
+	if (elem->padding == '0')
+	{
+		//printf("elem->padding == '0'\n");
+		len = (elem->flag ? prf_putchar(elem->flag) : 0);
+		len += prf_putstr(elem->hex);
+	}
+	if (!elem->left)
+	{
+		//printf("!elem->left\n");
+		//printf("len %d\n", len);
+		if (elem->flag)
+			str_len++;
+		len += prf_nbr_putchar(elem->padding, elem->width - str_len);
+		//printf("str_len %d\n", str_len);
+	}
+	if (elem->padding == ' ')
+	{
+		//printf("elem->padding == ' '\n");
+		//printf("elem->hex %s\n", elem->hex);
+		len += (elem->flag ? prf_putchar(elem->flag) : 0);
+		len += prf_putstr(elem->hex);
+	}
+	print_str_ln(str, ft_strlen(str)); ////print numbers
+	if (elem->left)
+	{
+		//printf("elem->left\n");
+		//printf("len %d\n", len);
+
+		if (elem->flag)
+			str_len++;
+		len += prf_nbr_putchar(elem->padding, elem->width - str_len);
+		//printf("str_len %d\n", str_len);
+	}
+	//printf("elem->left %d elem->width %d elem->flag %d\n", elem->left, elem->width, elem->flag);
+	free(str);
+	return (len);
+}
+
+int		print_atoi_nbr(va_list arg, t_bone *elem)
+{
+	char 		*str;
+	intmax_t  	bigmin;
+	uintmax_t	bighigh;
+	int 	len;
+
+	len = 1;
+	str = NULL;
+	if (ft_strchr("dDi", elem->type))
+	{
+		bigmin = intmax_cast(va_arg(arg, intmax_t), elem);
+		if (bigmin < 0)
 		{
-			ret[i++] = dig[value % base];
-			value /= base;
-		}
-		ret[i] = 0;
-		ft_strrev(ret);
-	}
-	return (ret);
-}
-
-/*
-** Handles %dDioOuUxXbp. Casts it appropriately, stores its sign in p,
-** then returns the unsigned number as string.
-*/
-
-char				*ft_printf_itoa_base(t_placehold *p, va_list a_list)
-{
-	intmax_t	sint;
-	uintmax_t	uint;
-
-	if (p->signed_num == 1)//dDi 1 ,иначе сдесь 0
-	{
-		sint = cast_intmax(va_arg(a_list, intmax_t), p);
-		if (sint < 0)
-		{
-			p->sign = '-';
-			uint = -sint;
+			bighigh = -bigmin;
+			//elem->prefix = 1;
+			elem->flag = '-';
+			//print this minus
 		}
 		else
-			uint = sint;
+			bighigh = bigmin;
 	}
 	else
-		uint = cast_uintmax(va_arg(a_list, uintmax_t), p);
-	if ((uint == 0 && (!ft_strchr("poO", p->type) || (p->hash &&
-		ft_strchr("oO", p->type) && p->prec))) || (p->hash &&
-		ft_strchr("oO", p->type) && p->prec > 0))
-		p->hash = NULL;
-	else if (uint > 0)
-		p->prec = MAX(ft_uintmax_len(uint, p->base), p->prec);
-	return (ft_uitoa_base(uint, p->base, p->uppercase, p->prec));
+		bighigh = uintmax_cast(va_arg(arg, uintmax_t), elem); //yep
+	if (bighigh == 0 && ft_strchr("oO", elem->type))
+		elem->hex = NULL;
+	str = itoa_base(elem, bighigh);
+	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);	//count str length to output
+
+	len += print_atoi_flags(str, elem, len);									//print flags
+	//print_str_ln(str, ft_strlen(str));												//print numbers
+	//free(str);
+	return (len);
 }
 
 
-static size_t	ft_puteval(int fd, t_placehold *p, char *str, size_t slen)
+
+
+
+
+
+
+
+
+char 	*print_char(va_list arg, t_bone *elem)
 {
-	size_t	count;
+	//int 		len;
+	char 		*str;
 
-	//printf("\nft_puteval strt\n");
-	count = 0;
-	if (p->padding == '0')
-	{	
-		//printf("p->padding == '0'\n");	
-		count += (p->sign ? ft_putchar_fd(p->sign, fd) : 0);
-		count += ft_putstr_fd(p->hash, fd);
-	}
-	if (!p->leftalign)
-	{	
-		//printf("!p->leftalign\n");
-		//printf("\n758 p->width %d p->width - slen %lu slen %zu\n", p->width, p->width - slen, slen);	
-		count += ft_putnchar_fd(fd, p->padding, p->width - slen);
-		//printf("\n760 ft_puteval !p->leftalign %d count %zu\n", p->leftalign, count);
-		//printf("slen %zu\n", slen);
-	}
-	if (p->padding == ' ')
-	{
-		//printf("p->padding == ' '\n");
-		//printf("p->hash %s\n", p->hash);
-		count += (p->sign ? ft_putchar_fd(p->sign, fd) : 0);
-		count += ft_putstr_fd(p->hash, fd);
-	}
-	count += ft_putnstr_fd(fd, str, ft_strlen(str));
-	count += (p->type && (ft_strchr("cC", p->type) && ft_strlen(str) == 0) ?
-		ft_putchar_fd(*str, fd) : 0);
-	if (p->leftalign)
-	{
-		//printf("p->leftalign\n");
-		count += ft_putnchar_fd(fd, p->padding, p->width - slen);
-	}
-	if (p->length)
-		free(p->length);
-	//printf("\n773 ft_puteval end count %zu\n", count);
-	//printf("p->leftalign %d p->width %d p->sign %d p->padding %d\n", p->leftalign, p->width, p->sign, p->padding);
-	return (count);
-}
-
-
-size_t			print_eval(int fd, t_placehold *p, va_list a_list, size_t cnt)
-{
-	char	*str;
-	size_t	slen;
-	size_t	count;
-
+	//len = 0;
 	str = NULL;
-	if (p->type && ft_strchr("dDioOuUxXbp", p->type))
-		str = ft_printf_itoa_base(p, a_list);
-	else if (p->type && ft_strchr("fFeEgGaA", p->type))
-		str = ft_printf_ftoa(p, a_list);
-	else if (p->type && ft_strchr("cC", p->type))
-		str = ft_printf_ctos(p, a_list);
-	else if (p->type && ft_strchr("sS", p->type))
+	//printf("print_char %s\n", elem->mod_l);
+	//printf("arg %d\n", va_arg(arg, wint_t));
+	
+	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l") && MB_CUR_MAX > 1)
 	{
-		str = ft_printf_str(p, p->prec, a_list);
-		//printf("\n792 print_eval p->prec %d\n", p->prec);
+		//printf("!ft_strcmp(elem->mod_l\n");
+		str = ft_wctos((wchar_t)va_arg(arg, wint_t));
 	}
-	else if (p->type && p->type == 'n')
-		*va_arg(a_list, int*) = cnt;
-	else if ((str = ft_memalloc(sizeof(*str) * 2)))
-		*str = p->type;
-	if (p->type == 'n')
-		return (0);
-	slen = (ft_strchr("cC", p->type) && ft_strlen(str) == 0 ? 1 :
-		ft_strlen(str)) + ft_strlen(p->hash) + (p->sign != 0 ? 1 : 0);
-	count = ft_puteval(fd, p, str, slen);
-	if (str)
-		free(str);
-	//printf("print_eval count %zu\n", count);
-	return (count);
+	else
+	{
+		//printf("str %s\n", str); 
+		str = ft_memalloc(sizeof(*str) * 2);
+		*str = (unsigned char)va_arg(arg, int);
+	}
+	//len = prf_putstr(str);
+	//free(str);
+	//return (len);
+	return (str);
 }
 
-
-
-void			set_hash(t_placehold *p, const char *e)
+char 	*print_str_char(va_list arg, t_bone *elem)
 {
-	if (p->hash || ft_strchr("paA", *e))
+	//int 		len;
+	char 		*str;
+	//size_t 	n;
+
+	//len = 0;
+	//str = NULL;
+	//printf("elem->mod_l %s\n", elem->mod_l);
+	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
 	{
-		if (ft_strchr("oO", *e))
-			p->hash = "0";
-		else if (ft_strchr("pxa", *e))
-			p->hash = "0x";
-		else if (ft_strchr("XA", *e))
-			p->hash = "0X";
-		else if (*e == 'b')
-			p->hash = "0b";
+		if (elem->precis >= 0)
+			str = ft_wtoc_strndup(va_arg(arg, wchar_t*), (size_t)elem->precis);
+		else
+			str = ft_wtoc_strdup(va_arg(arg, wchar_t*));
+	}
+	else
+	{
+		//printf("n %zu\n", (size_t)elem->precis);
+		if (elem->precis >= 0)
+			str = ft_strndup(va_arg(arg, char*), (size_t)elem->precis);// Мой с этим не работает
+		else
+			str = ft_strdup(va_arg(arg, char*));
+	}
+	if (!str && elem->precis != 0)
+		str = ft_strdup("(null)");
+	else if (!str)
+		str = ft_memalloc(sizeof(*str));
+	//printf("str %s\n", str);
+	//len = prf_putstr(str);
+	//free(str);
+	//return (len);
+	return (str);
+}
+
+int 	parse_arg(va_list arg, t_bone *elem)
+{
+	int len;
+	char 	*str;
+
+	len = 0;
+	str = NULL;	
+	if (ft_strchr("cC", elem->type))
+	{
+		//len = print_char(arg, elem);
+		str = print_char(arg, elem);
+		len += (ft_strlen(str) == 0) ? 1 : ft_strlen(str);
+		len += print_atoi_flags(str, elem, len);
+	}
+	else if (ft_strchr("sS", elem->type))
+	{
+		str = print_str_char(arg, elem);
+		len += ft_strlen(str);
+		len += print_atoi_flags(str, elem, len);
+		//len += print_str_char(arg, elem);
+	}
+	else if (ft_strchr("pdDioOuUxX", elem->type))
+	{		
+		len += print_atoi_nbr(arg, elem);
+	}
+	else if ((str = ft_memalloc(2)))
+	{
+		*str = elem->type;
+		len = prf_putstr(str);
+		free(str);
+	}
+	//if (str)
+	//	free(str);
+	return (len);
+}
+
+void	fillflag(const char **f, t_bone *elem)
+{
+	while (**f == '+' || **f == ' '|| **f == '-' || **f == '0' || **f == '#')
+	{
+		if (**f == '+')
+			elem->flag = '+';
+		else if (**f == ' ')
+			elem->flag = (elem->flag == 0 ? ' ' : elem->flag);
+		else if (**f == '-')
+		{
+			elem->left = 1;
+			elem->padding = ' ';
+		}
+		else if (**f == '0')
+			elem->padding = (elem->left == 0 ? '0' : elem->padding);
+		else if (**f == '#')
+			elem->hex = "#";		
+		(*f)++;
+	}
+	//printf("elem->left %d\n", elem->left);
+}
+
+void	filllength(const char **format, t_bone *elem)
+{
+	char 	*str;
+	if (ft_strchr("hljzqL", **format))
+	{
+		//printf("filllength %c\n", **format);
+		(*format)++;//to the next symbol
+		if (elem->mod_l)
+			free(elem->mod_l);
+
+		//elem->mod_l = NULL;
+		if (**format == 'h' || **format == 'l')
+		{
+			if (**format == 'h')
+				elem->mod_l = ft_strdup("hh");
+			else
+				elem->mod_l = ft_strdup("ll");
+			//printf("elem->mod_l %s\n", elem->mod_l);
+			(*format)++;
+		}
 		else
 		{
-			p->hash = NULL;
+			//elem->mod_l = (**format == 'h') ? ft_strdup("h") : NULL;
+			//elem->mod_l = ((*format - 1)[0] == 'l') ? ft_strdup("l") : NULL;
+			//elem->mod_l = (**format == 'j') ? ft_strdup("j") : NULL;
+			//elem->mod_l = (**format == 'z') ? ft_strdup("z") : NULL;
+			//elem->mod_l = (**format == 'q') ? ft_strdup("q") : NULL;
+			//elem->mod_l = (**format == 'L') ? ft_strdup("L") : NULL;
+
+			str = ft_memalloc(2);// (char *)(*format - 1)[0];
+			*str = (char)(*format - 1)[0];
+			//printf("st %s\n", str);
+			elem->mod_l = ft_strdup(str);
+			free(str);
+		}
+		//elem->mod_l = "l";
+		//printf("filllength %c\n", (*format - 1)[0]);
+	}
+}
+
+void 	fillwidth(const char **format, va_list arg, t_bone *elem)
+{
+	//printf("fillwidth %c\n", **format);
+	if (**format == '*')
+	{
+		if ((elem->width = va_arg(arg, int)) < 0)
+		{
+			elem->width = elem->width * -1;
+			elem->left = 1;
+			elem->padding = ' ';
+		}
+		(*format)++;
+	}
+	else if (**format >= '1' && **format <= '9')
+	{
+		while (**format >= '0' && **format <= '9')
+		{
+			elem->width = elem->width * 10 + **format - '0';
+			(*format)++;
+		}
+	}
+}
+
+void 	fillprecis(const char **format, va_list arg, t_bone *elem)
+{
+	//printf("fillprecis %c\n", **format);
+	if (**format == '.')
+	{
+		elem->precis = 0;
+		//printf("fillprecis %zu\n", elem->precis);
+		(*format)++;
+		if (**format == '*')
+		{
+			elem->precis = va_arg(arg, int);
+			if (elem->precis < 0)
+				elem->precis = -1;
+			(*format)++;
+		}
+		else
+		{
+			while (**format >= '0' && **format <= '9')
+			{
+				elem->precis = elem->precis * 10 + **format - '0';
+				(*format)++;
+			}			
+		}
+	}
+	//printf("fillprecis %zu\n", elem->precis);
+}
+
+void	filltype(const char **format, t_bone *elem)
+{
+	//printf("filltype %c\n", **format);
+	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
+	{		
+		elem->xx = (ft_strchr("XEGA", **format)) ? 1 : 0;
+		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
+		elem->base = (ft_strchr("pxX", **format) ? 16 : elem->base);
+		if (ft_strchr("DOUCS", **format))
+		{
+			if (elem->mod_l)
+				free(elem->mod_l);
+			elem->mod_l = ft_strdup("l");
+		}
+	}	
+	elem->type = **format;
+	//elem->flag = (!ft_strchr("dDifFfFeEgGaA", **format) ? 0 : elem->flag);
+	elem->padding = ((ft_strchr("pdDioOuUxXb", **format)) && (elem->precis >= 0)) ? ' ' : elem->padding;
+}
+
+void			fillhex(const char **format, t_bone *p)
+{
+	if (p->hex || ft_strchr("paA", **format))//#
+	{
+		if (ft_strchr("oO", **format))
+			p->hex = "0";
+		else if (ft_strchr("pxa", **format))
+			p->hex = "0x";
+		else if (ft_strchr("XA", **format))
+			p->hex = "0X";
+		else if (**format == 'b')
+			p->hex = "0b";
+		else
+		{
+			p->hex = NULL;
 			return ;
 		}
-		p->sign = 0;
+		//p->flag = 0;
 	}
 }
 
-void	set_flag_field(t_placehold *p, const char **e)
+void	fillmas(t_bone *elem)
 {
-	while (1)
-	{
-		if (**e == '+')
-			p->sign = '+';
-		else if (**e == ' ')
-			p->sign = (p->sign == 0 ? ' ' : p->sign);
-		else if (**e == '-')
-		{
-			p->leftalign = 1;
-			p->padding = ' ';
-		}
-		else if (**e == '0')
-			p->padding = (p->leftalign == 0 ? '0' : p->padding);
-		else if (**e == '#')
-			p->hash = "#";
-		else
-			break ;
-		(*e)++;
-	}
-	//printf("p->leftalign %d\n", p->leftalign);
+	elem->mod_l = NULL;
+	elem->type = 0;
+	elem->hex = NULL;
+	elem->padding = ' ';
+	elem->left = 0;
+	elem->flag = 0;
+	elem->base = 10;
+	elem->width = 0;
+	elem->precis = -1;
+	elem->prefix = 0;
+	elem->xx = 0;
 }
 
-void	set_width_field(t_placehold *p, const char **e, va_list a_list)
+void	build_flags(const char **format, va_list arg, t_bone *elem)
 {
-	if (**e == '*')
-	{
-		if ((p->width = va_arg(a_list, int)) < 0)
-		{
-			p->width = p->width * -1;
-			p->leftalign = 1;
-			p->padding = ' ';
-		}
-		(*e)++;
-	}
-	else if (**e >= '1' && **e <= '9')
-	{
-		while (**e >= '0' && **e <= '9')
-		{
-			p->width = p->width * 10 + **e - '0';
-			(*e)++;
-		}
-	}
+	fillmas(elem);
+	fillflag(format, elem);
+	fillwidth(format, arg, elem);
+	fillprecis(format, arg, elem);
+	filllength(format, elem);
+	filltype(format, elem);
+
+	fillhex(format, elem);
 }
 
-void	set_precision_field(t_placehold *p, const char **e, va_list a_list)
+int 	ft_printf(const char *format, ...)
 {
-	if (**e == '.')
+	int 	len;
+	int 	tick;
+	const char	*e;
+	va_list arg;
+	t_bone		*elem;
+
+	va_start(arg,format);
+	tick = 0;
+	elem = malloc(sizeof(*elem));
+	while (*format)
 	{
-		p->prec = 0;
-		(*e)++;
-		if (**e == '*')
+		if (*format == '%')
 		{
-			p->prec = va_arg(a_list, int);
-			if (p->prec < 0)
-				p->prec = -1;
-			(*e)++;
+			e = format + 1;
+			//printf("e %s\n", e);
+			//if(!(len = parse_arg(&format, arg)))
+			//	break ;
+			build_flags(&e, arg, elem);
+			//printf("elem->mod_l %s\n", elem->mod_l);
+			len = parse_arg(arg, elem);
+			if (elem->mod_l)
+				free(elem->mod_l);
+			tick += len;
+			format = e;
 		}
 		else
 		{
-			while (**e >= '0' && **e <= '9')
-			{
-				p->prec = p->prec * 10 + **e - '0';
-				(*e)++;
-			}
+			write(1, &(*format), 1);
+			tick++;
 		}
+		//free(elem->mod_l);
+		format += *format ? 1 : 0;
 	}
-}
-
-void	set_length_field(t_placehold *p, const char **e)
-{
-	//printf("**e %c\n", **e);
-	if (**e && ft_strchr("hljzqL", **e))
-	{
-					//printf("909 *e %s\n", *e);
-		(*e)++;	//до следующего символа
-					//printf("911 (*e)++ %s\n", *e);
-					//printf("\n905 set_length_field %c\n", **e);
-		if (**e == 'h' || **e == 'l')
-			p->length = ft_strndup((*e)++ - 1, 2);
-		else
-			p->length = ft_strndup(*e - 1, 1); //назад на один символ
-		//printf("917 p->length %s\n", p->length);
-	}
-}
-
-
-
-void	set_type_field(t_placehold *p, const char *e)
-{
-	//printf("\n*e %c\n", *e);
-	if (*e && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", *e))
-	{
-		//printf("\nset_type_field *e %c\n", *e);
-		p->uppercase = (ft_strchr("XEGA", *e) ? 1 : p->uppercase);
-		p->base = (*e == 'b' ? 2 : p->base);
-		p->base = (ft_strchr("oO", *e) ? 8 : p->base);
-		p->base = (ft_strchr("pxXaA", *e) ? 16 : p->base);
-		p->exp_base = (ft_strchr("aA", *e) ? 2 : p->exp_base);
-		p->exp_len = (ft_strchr("aA", *e) ? 1 : p->exp_len);
-		p->exp_char = (ft_strchr("aA", *e) ? *e + 15 : p->exp_char);
-		p->exp_char = (ft_strchr("eEgG", *e) ? 'e' : p->exp_char);
-		if (ft_strchr("DOUCS", *e))
-		{
-			if (p->length)
-				free(p->length);
-			p->length = ft_strdup("l");
-		}
-		p->signed_num = (ft_strchr("dDi", *e) ? 1 : p->signed_num);
-		set_hash(p, e);
-	}
-	else
-		p->prec = 1;
-	p->sign = (!ft_strchr("dDifFfFeEgGaA", *e) ? 0 : p->sign);
-	p->padding = (ft_strchr("pdDioOuUxXb", *e) && p->prec >= 0 &&
-		p->leftalign == 0) ? ' ' : p->padding;
-	p->type = *e;
-	//printf("*e %c\n", *e);
-	//printf("\n945 set_type_field p->type %c\n", p->type); //p->type s
-}
-
-static void		init_placehold(t_placehold *p)
-{
-	p->leftalign = 0;
-	p->sign = 0;
-	p->padding = ' ';
-	p->hash = NULL;
-	p->width = 0;
-	p->prec = -1;
-	p->length = NULL;
-	p->type = 0;
-	p->base = 10;
-	p->signed_num = 0;
-	p->uppercase = 0;
-	p->sigfig = -1;
-	p->exp_base = 10;
-	p->exp_char = 0;
-	p->exp_len = 2;
-}
-
-void			eval_fields(t_placehold *p, const char **e, va_list a_list)
-{
-	init_placehold(p);
-	set_flag_field(p, e);
-	set_width_field(p, e, a_list);
-	set_precision_field(p, e, a_list);
-	set_length_field(p, e);
-	set_type_field(p, *e);
-}
-
-int	ft_vfdprintf(int fd, const char *format, va_list a_list)
-{
-    t_placehold	*p;
-    const char	*e;
-    size_t		count;
-    
-    count = 0;
-    if (format)
-    {
-        p = malloc(sizeof(*p));
-        e = format;
-        while (*format)
-        {
-            if (*format == '%')
-            {
-                e = format + 1;
-               // printf("994!!e!! %s\n", e); //вернет все что после %
-
-                eval_fields(p, &e, a_list);
-                //printf("1002!!e!! %s\n", e);
-                count += print_eval(fd, p, a_list, count);
-                format = e;
-            }
-            else
-                count += ft_putchar_fd(*(format), fd); //ft_putchar_fd возвращает int а мой не вернет он с void
-            format += *format ? 1 : 0;
-        }
-        free(p);
-    }
-    //printf("count %zu\n", count); //Возвр количество символов
-    return (count);
-}
-
-int	ft_printf(const char *format, ...)
-{
-	va_list a_list;
-	size_t	count;
-
-	va_start(a_list, format);
-	count = ft_vfdprintf(1, format, a_list);
-	va_end(a_list);
-	return (count);
+	va_end(arg);
+	free(elem);
+	//printf("tick %d\n", tick);
+	return (tick);
 }
