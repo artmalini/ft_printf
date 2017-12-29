@@ -136,7 +136,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)*s1 - (unsigned char)*s2);
 }
 
-/*char	*ft_strdup(const char *s1)
+/*char	*ft_strdup(const char *s1)			//?? Тоже не работает
 {
 	char	*mas;
 
@@ -145,7 +145,9 @@ int	ft_strcmp(const char *s1, const char *s2)
 	ft_strcpy(mas, s1);
 	return (mas);
 }*/
-char	*ft_strdup(const char *s1)
+
+
+char	*ft_strdup(const char *s1)			//?? Т
 {
 	int		len;
 	char	*str;
@@ -161,7 +163,6 @@ char	*ft_strdup(const char *s1)
 		str = NULL;
 	return (str);
 }
-
 
 
 
@@ -257,7 +258,7 @@ static char	*ft_wctos(wchar_t c)
 		*e++ = ((c >> 6) & 0x3F) | 0x80;
 		*e++ = (c & 0x3F) | 0x80;//63  128
 	}
-	*e++ = '\0';
+	//*e++ = '\0';
 	return (s);
 }
 
@@ -458,6 +459,7 @@ int 	print_atoi_flags(char *str, t_bone *elem, int str_len)
 	if (elem->padding == ' ')
 	{
 		//printf("elem->padding == ' '\n");
+		//printf("elem->hex %s\n", elem->hex);
 		len += (elem->flag ? prf_putchar(elem->flag) : 0);
 		len += prf_putstr(elem->hex);
 	}
@@ -527,8 +529,10 @@ char 	*print_char(va_list arg, t_bone *elem)
 	char 		*str;
 
 	//len = 0;
-	//str = NULL;
+	str = NULL;
 	//printf("print_char %s\n", elem->mod_l);
+	//printf("arg %d\n", va_arg(arg, wint_t));
+	
 	if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l") && MB_CUR_MAX > 1)
 	{
 		//printf("!ft_strcmp(elem->mod_l\n");
@@ -592,7 +596,7 @@ int 	parse_arg(va_list arg, t_bone *elem)
 	{
 		//len = print_char(arg, elem);
 		str = print_char(arg, elem);
-		len += (ft_strlen(str) == 0) ? 1 : ft_strlen(str);// + ft_strlen(elem->hex) + (elem->flag != 0 ? 1 : 0);;
+		len += (ft_strlen(str) == 0) ? 1 : ft_strlen(str);
 		len += print_atoi_flags(str, elem, len);
 	}
 	else if (ft_strchr("sS", elem->type))
@@ -836,4 +840,3 @@ int 	ft_printf(const char *format, ...)
 	free(elem);
 	//printf("tick %d\n", tick);
 	return (tick);
-}
