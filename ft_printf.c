@@ -309,7 +309,7 @@ static char	*ft_wtoc_strdup(wchar_t *w)
 	t = w;
 	if (t)
 		while (*t++)
-			len += sizeof(wchar_t);
+			len += 4;
 		//printf("ft_wtoc_strdup %zu\n", len);
 	return (ft_wtoc_strndup(w, len));
 }
