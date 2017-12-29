@@ -85,13 +85,23 @@ void	*ft_memalloc(size_t size)
 	return (v);
 }
 
-char	*ft_strcpy(char *dst, const char *src)
+/*char	*ft_strcpy(char *dst, const char *src)
 {
 	char *d;
 
 	d = dst;
 	while ((*d++ = *src++) != 0)
 		;
+	return (dst);
+}*/
+char	*ft_strcpy(char *dst, const char *src)
+{
+	char	*mas;
+
+	mas = dst;
+	while (*src != '\0')
+		*mas++ = *src++;
+	*mas = '\0';
 	return (dst);
 }
 
@@ -309,7 +319,7 @@ static char	*ft_wtoc_strdup(wchar_t *w)
 	t = w;
 	if (t)
 		while (*t++)
-			len += 4;
+			len += sizeof(wchar_t);
 		//printf("ft_wtoc_strdup %zu\n", len);
 	return (ft_wtoc_strndup(w, len));
 }
