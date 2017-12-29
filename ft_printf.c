@@ -184,9 +184,9 @@ static char		*ft_strndup(const char *s1, size_t len)
 
 static int 		prf_putchar(char c)
 {
-	int 	len;
+	//int 	len;
 
-	len = 0;
+	//len = 0;
 	if (c)
 	{
 		write(1, &c, 1);
@@ -554,7 +554,7 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 {
 	//int 		len;
 	char 		*str;
-	size_t 	n;
+	//size_t 	n;
 
 	//len = 0;
 	//str = NULL;
@@ -643,7 +643,7 @@ void	fillflag(const char **f, t_bone *elem)
 	//printf("elem->left %d\n", elem->left);
 }
 
-void	filllength(const char **format, va_list arg, t_bone *elem)
+void	filllength(const char **format, t_bone *elem)
 {
 	char 	*str;
 	if (ft_strchr("hljzqL", **format))
@@ -795,7 +795,7 @@ void	build_flags(const char **format, va_list arg, t_bone *elem)
 	fillflag(format, elem);
 	fillwidth(format, arg, elem);
 	fillprecis(format, arg, elem);
-	filllength(format, arg, elem);
+	filllength(format, elem);
 	filltype(format, elem);
 
 	fillhex(format, elem);
