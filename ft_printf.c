@@ -541,8 +541,9 @@ char 	*print_char(va_list arg, t_bone *elem)
 	else
 	{
 		//printf("str %s\n", str); 
-		str = ft_memalloc(sizeof(*str) * 2);
-		*str = (unsigned char)va_arg(arg, int);
+		//str = ft_memalloc(sizeof(*str) * 2);
+		//*str = (unsigned char)va_arg(arg, int);
+		str = ft_wctos((wchar_t)va_arg(arg, wint_t));
 	}
 	//len = prf_putstr(str);
 	//free(str);
