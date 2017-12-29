@@ -232,11 +232,27 @@ static int 		prf_putstr(char *str)
 	return (len);
 }
 
-void 	print_str_ln(char *str, size_t nbr)
+void	print_str_ln(char *str, size_t nbr) 
+{
+	//printf("ft_putnstr_fd\n");
+	int len;
+
+	len = 0;
+	if (str && nbr)
+	{
+		//printf("write ft_putnstr_fd\n");
+		len = ft_strlen(str);
+		if (nbr < len)
+			len = nbr;
+		write(1, str, len);
+	}
+}
+
+/*void 	print_str_ln(char *str, size_t nbr)
 {
 	if (*str != '\0' && nbr)
 		write(1, str, nbr);
-}
+}*/
 
 
 
