@@ -232,9 +232,9 @@ static int 		prf_putstr(char *str)
 	return (len);
 }
 
-void 	print_str_ln(char *str, int nbr)
+void 	print_str_ln(char *str, size_t nbr)
 {
-	if (*str && nbr)
+	if (*str != '\0' && nbr)
 		write(1, str, nbr);
 }
 
@@ -328,7 +328,7 @@ int		str_print(va_list arg, t_bone *elem)
 {
 	char *c;
 	char	*s;
-	int len;
+	size_t len;
 
 	len = 0;
 
