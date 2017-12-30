@@ -728,7 +728,7 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 	return (str);
 }
 
-size_t 		parse_arg(va_list arg, t_bone *elem)
+size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 {
 	size_t 	len;
 	char 	*str;
@@ -738,7 +738,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem)
 	//printf("elem->type %c\n", elem->type);
 	if (elem->type == 'n')
 	{
-		*va_arg(arg, int*) = ft_strlen(str);
+		*va_arg(arg, int*) = ln;
 		return (0);
 	}
 	if (elem->type && ft_strchr("cC", elem->type))
@@ -978,7 +978,7 @@ int 	ft_printf(const char *format, ...)
 			//	break ;
 			build_flags(&e, arg, elem);
 			//printf("elem->mod_l %s\n", elem->mod_l);
-			len = parse_arg(arg, elem);
+			len = parse_arg(arg, elem, tick);
 			if (elem->mod_l)
 				free(elem->mod_l);
 			if (elem->hex)
