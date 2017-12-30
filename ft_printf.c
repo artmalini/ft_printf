@@ -669,7 +669,7 @@ char 	*print_char(va_list arg, t_bone *elem)
 	else
 	{
 		//printf("str %s\n", str); 
-		str = ft_memalloc(sizeof(*str) * 2);
+		str = ft_memalloc(2);
 		*str = (char)va_arg(arg, int);
 	}
 	//len = prf_putstr(str);
