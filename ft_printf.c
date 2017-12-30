@@ -738,6 +738,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem)
 	//printf("elem->type %c\n", elem->type);
 	if (elem->type == 'n')
 	{
+		*va_arg(arg, int*) = ft_strlen(str);
 		return (0);
 	}
 	if (elem->type && ft_strchr("cC", elem->type))
