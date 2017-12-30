@@ -668,16 +668,10 @@ char 	*print_char(va_list arg, t_bone *elem)
 	}
 	else
 	{
-		if (MB_CUR_MAX > 1)
-		{
+		
 			//printf("!ft_strcmp(elem->mod_l\n");
 			str = ft_wctos((wchar_t)va_arg(arg, wint_t));
-		}
-		else
-		{
-			str = ft_memalloc(sizeof(*str) * 2);
-			*str = (unsigned char)va_arg(arg, int);
-		}
+		
 		//printf("str %s\n", str); 
 		//str = ft_memalloc(sizeof(*str) * 2);
 		//*str = (unsigned char)va_arg(arg, int);
