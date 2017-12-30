@@ -668,13 +668,9 @@ char 	*print_char(va_list arg, t_bone *elem)
 	}
 	else
 	{
-		
-			//printf("!ft_strcmp(elem->mod_l\n");
-			str = ft_wctos((wchar_t)va_arg(arg, wint_t));
-		
 		//printf("str %s\n", str); 
-		//str = ft_memalloc(sizeof(*str) * 2);
-		//*str = (unsigned char)va_arg(arg, int);
+		str = ft_memalloc(sizeof(*str) * 2);
+		*str = (char)va_arg(arg, int);
 	}
 	//len = prf_putstr(str);
 	//free(str);
