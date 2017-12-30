@@ -736,7 +736,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem)
 	}
 	else if (elem->type && ft_strchr("pdDioOuUxX", elem->type))
 	{	
-		printf("elem->type %c\n", elem->type);	
+		//printf("elem->type %c\n", elem->type);	
 		len += print_atoi_nbr(arg, elem);
 	}
 	else if ((str = ft_memalloc(2)))
