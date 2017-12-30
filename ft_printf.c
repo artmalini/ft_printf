@@ -258,6 +258,21 @@ static int 		prf_putstr(char *str)
 	}
 }*/
 
+int		ft_char(char *str)
+{
+	int 	len;
+
+	len = 0;
+	if (str)
+	{
+		while [str[len]]
+			len++;
+		write(1, &str, 1);
+	}
+	free(str);
+	return (1);
+}
+
 void 	print_str_ln(char *str, size_t nbr)
 {
 	if (str && nbr)
@@ -725,7 +740,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem)
 		//len = print_char(arg, elem);
 		str = print_char(arg, elem);
 		len += ((ft_strlen(str) == 0) ? 1 : ft_strlen(str));
-		len += print_atoi_flags(str, elem, len);
+		len += ft_strlen(str) > 0 ? print_atoi_flags(str, elem, len) : ft_char(str);
 	}
 	else if (elem->type && ft_strchr("sS", elem->type))
 	{
