@@ -265,7 +265,7 @@ int		ft_char(char *str)
 	len = 0;
 	if (str)
 	{
-		while [str[len]]
+		while (str[len])
 			len++;
 		write(1, &str, 1);
 	}
