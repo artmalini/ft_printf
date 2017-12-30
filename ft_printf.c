@@ -265,12 +265,12 @@ int		ft_char(char *str)
 	len = 0;
 	if (str)
 	{
-		while (str[len])
+		//while (str[len])
 			len++;
-		write(1, &str, 1);
+		write(1, &(*str), 1);
+		free(str);
 	}
-	free(str);
-	return (1);
+	return (len);
 }
 
 void 	print_str_ln(char *str, size_t nbr)
