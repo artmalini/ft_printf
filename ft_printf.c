@@ -738,8 +738,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 	//printf("elem->type %c\n", elem->type);
 	if (elem->type == 'n')
 	{
-		*va_arg(arg, int*) = ln;
-		return (0);
+		return (*va_arg(arg, int*) = ln);
 	}
 	if (elem->type && ft_strchr("cC", elem->type))
 	{
@@ -755,7 +754,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		len += print_atoi_flags(str, elem, len);
 		//len += print_str_char(arg, elem);
 	}
-	else if (elem->type && ft_strchr("pdDioOuUxX", elem->type))
+	else if (elem->type && ft_strchr("pdDioOuUxXb", elem->type))
 	{	
 		//printf("elem->type %c\n", elem->type);	
 		len += print_atoi_nbr(arg, elem);
@@ -893,6 +892,7 @@ void	filltype(const char **format, t_bone *elem)
 	if (**format && ft_strchr("sSpdDioOuUxXcCbfFeEgGaA", **format))
 	{		
 		elem->xx = (ft_strchr("XEGA", **format)) ? 1 : 0;
+		elem->base = (ft_strchr("b", **format) ? 2 : elem->base);
 		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
 		elem->base = (ft_strchr("pxX", **format) ? 16 : elem->base);
 		if (ft_strchr("DOUCS", **format))
