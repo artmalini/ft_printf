@@ -258,6 +258,12 @@ static int 		prf_putstr(char *str)
 	}
 }*/
 
+void 	print_str_ln(char *str, size_t nbr)
+{
+	if (str && nbr)
+		write(1, str, nbr);
+}
+
 int		ft_char(char *str)
 {
 	int 	len;
@@ -265,18 +271,11 @@ int		ft_char(char *str)
 	len = 0;
 	if (str)
 	{
-		//while (str[len])
-			len++;
+		len++;
 		write(1, &(*str), 1);
 		free(str);
 	}
 	return (len);
-}
-
-void 	print_str_ln(char *str, size_t nbr)
-{
-	if (str && nbr)
-		write(1, str, nbr);
 }
 void	ft_strrev(char *s)
 {
@@ -474,7 +473,7 @@ static uintmax_t		uintmax_cast(uintmax_t nbr, t_bone *elem)
 	return ((unsigned int)nbr);
 }
 
-char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
+/*char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 {
 	uintmax_t 	big;
 	char 	*itoa;
@@ -502,7 +501,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	//printf("len %d bighigh %zu", len, bighigh);
 	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
 		return (NULL);	
-	//*(itoa + (len + 1)) = 0;
+	// *(itoa + (len + 1)) = 0;
 	while (i < len || bighigh != 0)
 	{
 		//printf("str %c\n", str[bighigh % elem->base]);
@@ -515,14 +514,14 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	itoa[len] = 0;
 	ft_strrev(itoa);
 	//i++;
-	//*(itoa + i) = 0;
+	// *(itoa + i) = 0;
 	//if (elem->prefix)
 	//	*(itoa + len) = '-';
 	//printf("itoa %s\n", itoa);
 	return (itoa);
-}
+}*/
 
-/*char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
+char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 {
 	uintmax_t 	big;
 	char 	*itoa;
@@ -548,7 +547,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	len = (len > elem->precis) ? len : elem->precis;
 	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
 		return (NULL);	
-	*(itoa + (len + 1)) = 0;
+	*(itoa + len) = 0;
 	while (i < len || bighigh != 0)
 	{
 		*(itoa + --len) = str[bighigh % elem->base];
@@ -561,7 +560,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	//	*(itoa + len) = '-';
 	//printf("itoa %s\n", itoa);
 	return (itoa);
-}*/
+}
 
 
 
@@ -659,6 +658,16 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 
 
 
+size_t 	print_float_nbr(va_list arg, t_bone *elem)
+{
+	size_t 	len;
+
+	len = 0;
+
+	return (len);
+}
+
+
 
 
 
@@ -684,6 +693,8 @@ char 	*print_char(va_list arg, t_bone *elem)
 	else
 	{
 		//printf("str %s\n", str); 
+		//str = ft_memalloc(sizeof(*str) * 2);
+		//*str = (char)va_arg(arg, int);
 		str = ft_memalloc(2);
 		*str = (char)va_arg(arg, int);
 	}
@@ -736,10 +747,6 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 	len = 0;
 	str = NULL;	
 	//printf("elem->type %c\n", elem->type);
-	if (elem->type == 'n')
-	{
-		return (*va_arg(arg, int*) = ln);
-	}
 	if (elem->type && ft_strchr("cC", elem->type))
 	{
 		//len = print_char(arg, elem);
@@ -759,10 +766,16 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		//printf("elem->type %c\n", elem->type);	
 		len += print_atoi_nbr(arg, elem);
 	}
-	/*else if (elem->type == 'n')
+	else if (elem->type && ft_strchr("fF", elem->type))
+	{	
+		//printf("elem->type %c\n", elem->type);	
+		len += print_float_nbr(arg, elem);
+	}
+	else if (elem->type == 'n')
 	{
-		return (0);
-	}*/
+		//*va_arg(arg, int*) = ln;
+		return (*va_arg(arg, int*) = ln);
+	}
 	else if ((str = ft_memalloc(2)))
 	{
 		*str = elem->type;
