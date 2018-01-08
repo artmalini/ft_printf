@@ -717,6 +717,39 @@ char 	*gather_mantissa(t_bone *elem, long double nbr)
 	return (str);
 }
 
+/*void 		get_width(t_bone *elem, long double droby)
+{
+		long double	m;
+	long double	c;
+	int			i;
+
+	if ((i = elem->precis) != -1)
+	{
+		m = gather_mantissa(droby, elem->base);
+		c = droby - m;
+		printf(" ft_uld_badround ld %Lf m %Lf c %Lf\n", droby, m, c);
+		while (i-- > 0)
+			m *= elem->base;
+		if (gather_mantissa(elem, m) >= .5)
+		{
+			printf("yep >= .5 \n");
+			m = m - gather_mantissa(elem, m) + 1.1;
+			printf("yep m %Lf\n", m);
+		}
+		else
+		{
+			printf("yep < .5 \n");
+			m = m - gather_mantissa(elem, m) + .1;
+			printf("yep m %Lf\n", m);
+		}
+		while (++i < elem->precis)
+			m /= elem->base;
+		printf("ft_uld_badround c %Lf m %Lf c+m %Lf\n", c, m, c + m );
+		return (c + m);
+	}
+	return (droby);
+}*/
+
 long double 	gather_float(t_bone *elem, long double droby)
 {
 	long double 	val;
@@ -724,6 +757,8 @@ long double 	gather_float(t_bone *elem, long double droby)
 
 	val = 1;
 	//printf("RRRRR %lu\n", (uintmax_t)34634634643.457856856868 / 1);
+
+	//get_width(elem, droby);
 	while (droby >= 1)
 	{
 		i = (uintmax_t)(droby / val);
@@ -746,12 +781,14 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 	j = elem->precis;
 	elem->precis = 0;//itoa base
 	str = ft_memalloc(sizeof(str));
+	//printf("nbr %Lf\n", nbr);
 	while (j > 0)
 	{
+		//printf("build_float_str nbr %.16Lf\n", nbr);
 		i = nbr * 10;
-		nbr *= 10;
-			//printf("build_float_str i %d nbr %Lf\n", i, nbr);
+			//printf("build_float_str nbr %Lf i %d \n", nbr, i);
 		str = ft_join_float(str, itoa_base(elem, i));			
+		nbr *= 10;
 		nbr -= i;
 		if (j)
 			j--;
@@ -774,11 +811,13 @@ size_t		print_float_nbr(va_list arg, t_bone *elem)
 		nbr = va_arg(arg, double);
 	elem->flag = (nbr < 0) ? '-' : elem->flag;
 	nbr = (nbr < 0) ? -nbr : nbr;
-	//elem->precis = (elem->precis == -1) ? 6 : elem->precis;
+	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
 
 	str = gather_mantissa(elem, nbr);
 		//printf("print_float_nb %s\n", str);
 	nbr = gather_float(elem, nbr);
+	nbr = (elem->precis >= .5) ? nbr + .0000001 : nbr;
+		p//rintf("print_float_nb  nbr%Lf\n", nbr);
 	str = ft_join_float(str, build_float_str(elem, nbr));
 		//printf("print_float_nb %s\n", str);
 
