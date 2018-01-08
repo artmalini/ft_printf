@@ -143,10 +143,30 @@ size_t	ft_strlen(const char *s)
 	return (n);
 }
 
-char	*ft_strcat(char *s1, const char *s2)
+/*char	*ft_strcat(char *s1, const char *s2)
 {
 	ft_strcpy(&s1[ft_strlen(s1)], s2);
 	return (s1);
+}*/
+char	*ft_strcat(char *s1, const char *s2)
+{
+	char	*mas;
+	int		ln;
+	int		i;
+
+	mas = s1;
+	ln = 0;
+	i = 0;
+	while (mas[ln] != '\0')
+		ln++;
+	while (s2[i] != '\0')
+	{
+		mas[ln] = s2[i];
+		i++;
+		ln++;
+	}
+	mas[ln] = '\0';
+	return (mas);
 }
 
 int	ft_strcmp(const char *s1, const char *s2)
@@ -657,13 +677,113 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 }
 
 
+static	char	*ft_join_float(char *str1, char *str2)
+{
+	char 	*str3;
 
-size_t 	print_float_nbr(va_list arg, t_bone *elem)
+	if (!str1 || !str2)
+		return (NULL);
+	str3 = (char *)malloc(sizeof(str3) * ((ft_strlen(str1)) + (ft_strlen(str2))) + 1);
+	if (!str3)
+		return (NULL);
+	*str3 = 0;
+	str3 = ft_strcat(ft_strcat(str3, str1), str2);
+	free(str1);
+	free(str2);
+	return (str3);
+}
+
+char 	*gather_mantissa(t_bone *elem, long double nbr)
+{
+	long double 	val;
+	uintmax_t 		i;
+	int 	tmp;
+	//int 	base;
+	char 	*str;
+
+	tmp = elem->precis;
+	elem->precis = 0;//itoa base
+	val = 1;
+	str = ft_memalloc(sizeof(str));
+	while (nbr >= 1)
+	{
+		i = (uintmax_t)(nbr / val);
+		str = ft_join_float(str, itoa_base(elem, i));
+		nbr -= i * val;			
+		val /= 1;
+	}
+	elem->precis = tmp;
+	str = ft_join_float(str, ft_strdup("."));
+	return (str);
+}
+
+long double 	gather_float(t_bone *elem, long double droby)
+{
+	long double 	val;
+	uintmax_t 		i;
+
+	val = 1;
+	//printf("RRRRR %lu\n", (uintmax_t)34634634643.457856856868 / 1);
+	while (droby >= 1)
+	{
+		i = (uintmax_t)(droby / val);
+		//printf("i %zu\n", i);
+		droby -= i * val;
+		//printf("droby %Lf\n", droby);
+		val /= 1;
+	}
+	//printf("droby %Lf\n", droby);
+	return (droby);
+}
+
+char 	*build_float_str(t_bone *elem, long double nbr)
+{
+	int 	i;
+	int 	j;
+	//int 	base;
+	char 	*str;
+
+	j = elem->precis;
+	elem->precis = 0;//itoa base
+	str = ft_memalloc(sizeof(str));
+	while (j > 0)
+	{
+		i = nbr * 10;
+		nbr *= 10;
+			//printf("build_float_str i %d nbr %Lf\n", i, nbr);
+		str = ft_join_float(str, itoa_base(elem, i));			
+		nbr -= i;
+		if (j)
+			j--;
+	}
+	return (str);
+}
+
+size_t		print_float_nbr(va_list arg, t_bone *elem)
 {
 	size_t 	len;
+	long double nbr;
+	char *str;
 
 	len = 0;
+	nbr = 0;
+	str = ft_memalloc(sizeof(str));
+	if (elem->mod_l && !ft_strcmp(elem->mod_l, "L"))
+		nbr = va_arg(arg, long double);
+	else
+		nbr = va_arg(arg, double);
+	elem->flag = (nbr < 0) ? '-' : elem->flag;
+	nbr = (nbr < 0) ? -nbr : nbr;
+	//elem->precis = (elem->precis == -1) ? 6 : elem->precis;
 
+	str = gather_mantissa(elem, nbr);
+		//printf("print_float_nb %s\n", str);
+	nbr = gather_float(elem, nbr);
+	str = ft_join_float(str, build_float_str(elem, nbr));
+		//printf("print_float_nb %s\n", str);
+
+	len = ft_strlen(str);
+	len += print_atoi_flags(str, elem, len);
 	return (len);
 }
 
