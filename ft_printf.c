@@ -816,7 +816,7 @@ size_t		print_float_nbr(va_list arg, t_bone *elem)
 	str = gather_mantissa(elem, nbr);
 		//printf("print_float_nb %s\n", str);
 	nbr = gather_float(elem, nbr);
-	nbr = (elem->precis >= .5) ? nbr + .0000001 : nbr;
+	nbr = (elem->precis >= .5) ? nbr + .000001 : nbr;
 		//printf("print_float_nb  nbr%Lf\n", nbr);
 	str = ft_join_float(str, build_float_str(elem, nbr));
 		//printf("print_float_nb %s\n", str);
