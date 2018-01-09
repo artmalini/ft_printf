@@ -1001,7 +1001,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		//printf("elem->type %c\n", elem->type);	
 		len += print_atoi_nbr(arg, elem);
 	}
-	else if (elem->type && ft_strchr("fFe", elem->type))
+	else if (elem->type && ft_strchr("fF", elem->type))
 	{	
 		//printf("elem->type %c\n", elem->type);	
 		len += print_float_nbr(arg, elem);
