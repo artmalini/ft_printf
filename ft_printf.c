@@ -863,11 +863,12 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 		//printf("build_float_str nbr %.16Lf\n", nbr);
 		i = nbr * 10;
 			//printf("build_float_str nbr %Lf i %d \n", nbr, i);
+		if (j == 1 && i >= .5)
+			i++;
 		str = ft_join_float(str, itoa_base(elem, i));			
 		nbr *= 10;
 		nbr -= i;
-		if (j)
-			j--;
+		j--;
 	}
 	return (str);
 }
