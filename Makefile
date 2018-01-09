@@ -1,7 +1,7 @@
 NAME = libftprintf.a
 INCLUDE = ft_printf.h
-SRC = *.c libft/*.c
-#SRC = *.c
+#SRC = *.c libft/*.c
+SRC = *.c
 OBJ = *.o
 
 all: $(NAME)
@@ -12,9 +12,9 @@ $(NAME):
 		ranlib $(NAME)
 
 clean:
-		/bin/rm -f $(OBJ)
+		rm -f $(OBJ)
 
 fclean: clean
-		/bin/rm -f $(NAME)
+		rm -f $(NAME)
 
 re: fclean all
