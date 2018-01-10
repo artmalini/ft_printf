@@ -914,7 +914,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 			l *= elem->base;
 		}
 	else
-		while (nbr / l <  1)
+		while (nbr && nbr / l <  1)
 		{
 			tick++;
 			l /= elem->base;
@@ -926,7 +926,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 		//printf("print_float_nb  nbr%Lf\n", nbr);
 	str = ft_join_float(str, build_float_str(elem, nbr));
 		//printf("print_float_nb %s\n", str);
-	str = ft_join_float(str, ((nbr >= 1) ? ft_strdup("e+") : ft_strdup("e-")));
+	str = ft_join_float(str, (elem->flag == '-') ? ft_strdup("e-") : ft_strdup("e+"));
 	if (tick < 10)
 		str = ft_join_float(str,  ft_strdup("0"));
 	str = ft_join_float(str, itoa_base(elem, tick));
