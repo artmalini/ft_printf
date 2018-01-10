@@ -720,44 +720,13 @@ char 	*gather_mantissa(t_bone *elem, long double nbr)
 	return (str);
 }
 
-/*void 		get_width(t_bone *elem, long double droby)
-{
-		long double	m;
-	long double	c;
-	int			i;
 
-	if ((i = elem->precis) != -1)
-	{
-		m = gather_mantissa(droby, elem->base);
-		c = droby - m;
-		printf(" ft_uld_badround ld %Lf m %Lf c %Lf\n", droby, m, c);
-		while (i-- > 0)
-			m *= elem->base;
-		if (gather_mantissa(elem, m) >= .5)
-		{
-			printf("yep >= .5 \n");
-			m = m - gather_mantissa(elem, m) + 1.1;
-			printf("yep m %Lf\n", m);
-		}
-		else
-		{
-			printf("yep < .5 \n");
-			m = m - gather_mantissa(elem, m) + .1;
-			printf("yep m %Lf\n", m);
-		}
-		while (++i < elem->precis)
-			m /= elem->base;
-		printf("ft_uld_badround c %Lf m %Lf c+m %Lf\n", c, m, c + m );
-		return (c + m);
-	}
-	return (droby);
-}*/
-long double 	nbr_power(long double nb, long double power)
+long double 	nbr_power(long double elmbase, long double power)
 {
 	long double i;
 	long double num;
 
-	num = nb;
+	num = elmbase;
 	if (power < 0)
 		return (0);
 	else if (power == 0)
@@ -765,40 +734,45 @@ long double 	nbr_power(long double nb, long double power)
 	i = 1;
 	while (i++ < power)
 	{
-		num *= nb;
+		num *= elmbase;
 		//printf("num %Lf\n", num);
 	}
 	return (num);
 }
 
-long double 	traverse(long double nb, long double nbr)
+long double 	traverse(long double elmbase, long double nbr)
 {
 	long double		u;
 	uintmax_t 		i;
 
 	u = 1;
-	while (u < nbr / nbr_power(nb, 8))
+	while (u < nbr / nbr_power(elmbase, 8))
 	{
-		u *= nbr_power(nb, 8);
-		//printf("integerpower %Lf\n", u);
+		u *= nbr_power(elmbase, 8);
+		//printf("round integerpower %Lf\n", u);
+		//i = (uintmax_t)(nbr / u);
+		//	printf("i %zu u %Lf\n", i, u);
+		//nbr -= i * u;
+			//printf("nbr %Lf u %Lf\n", nbr, u);
+		//u /= nbr_power(elmbase, 8);
 	}
-	//printf("integerpower %Lf\n", u);
+	//printf("integerpower %.20Lf nbr %.20Lf\n", u, nbr);
 	while (nbr >= 1)
 	{
 		i = (uintmax_t)(nbr / u);
-		//printf("i %zu u %Lf\n", i, u);
+			//printf("i %zu u %Lf\n", i, u);
 		nbr -= i * u;
-		//printf("nbr %Lf u %Lf\n", nbr, u);
-		u /= nbr_power(nb, 8);
+			//printf("nbr %Lf u %Lf\n", nbr, u);
+		u /= nbr_power(elmbase, 8);
 	}
-	//printf("traverse nbr %Lf\n", nbr);	
+	//printf("traverse nbr end %.20Lf\n", u);	
 	return (u);
 }
 
 long double 	fix_droby(t_bone *elem, long double nbr)
 {
 	long double	m;
-	//long double	c;
+	long double	c;
 	int			i;
 
 	//if ((i = elem->precis) != -1)
@@ -806,8 +780,8 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 	if (elem->precis != -1)
 	{
 		m = traverse(elem->base, nbr);
-
-		//printf("fix_droby m %Lf\n", m);
+		c = nbr - m;
+		//printf(" fix_droby nbr %.20Lf m %.20Lf c %Lf\n", nbr, m, c);
 		//while (i-- > 0)
 		//	m *= elem->base;
 		if (traverse(elem->base, m) < .5)
@@ -816,9 +790,17 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 			m -= traverse(elem->base, m) + .1;
 			//printf("yep m %Lf\n", m);
 		}
+		else if (traverse(elem->base, m) >= .5)
+		{
+			//printf("yep >= .5 m %.20Lf\n", m);
+			m -= traverse(elem->base, m);
+			m += 1.1;
+			//printf("yep m %Lf\n", m);			
+		}
 		while (++i < elem->precis)
 			m /= elem->base;
-		//printf("fix_droby m %Lf nbr %.20Lf\n", m, nbr + m);
+		//printf("fix_droby c %.20Lf m %.20Lf c+m %.20Lf\n", c, m, c + m );
+		//printf("fix_droby nbr %.20Lf m %.20Lf nbr+m %.20Lf\n", nbr, m, nbr + m );
 		return (nbr + m);
 	}
 	return (nbr);
@@ -862,7 +844,7 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 	{
 		//printf("build_float_str nbr %.16Lf\n", nbr);
 		i = nbr * 10;
-			//printf("build_float_str nbr %Lf i %d \n", nbr, i);
+			//printf("build_float_str nbr %Lf i %d elem->precis\n", nbr, i);
 		if (j == 1 && nbr >= .5)
 			i++;
 		str = ft_join_float(str, itoa_base(elem, i));			
@@ -904,7 +886,55 @@ size_t		print_float_nbr(va_list arg, t_bone *elem)
 }
 
 
+size_t		print_floate_nbr(va_list arg, t_bone *elem)
+{
+	size_t 	len;
+	long double nbr;
+	long double l;
+	char *str;
+	int  tick;
 
+	len = 0;
+	nbr = 0;
+	l = 1;
+	tick = 0;
+	str = ft_memalloc(sizeof(str));
+	if (elem->mod_l && !ft_strcmp(elem->mod_l, "L"))
+		nbr = va_arg(arg, long double);
+	else
+		nbr = va_arg(arg, double);
+	elem->flag = (nbr < 0) ? '-' : elem->flag;
+	nbr = (nbr < 0) ? -nbr : nbr;
+	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
+
+	if (nbr >= 1)
+		while (nbr / l >= elem->base)
+		{
+			tick++;
+			l *= elem->base;
+		}
+	else
+		while (nbr / l <  1)
+		{
+			tick++;
+			l /= elem->base;
+		}
+	//printf("l %.20Lf tick %d\n", l, tick);
+	str = gather_mantissa(elem, nbr / l);
+		//printf("print_float_nb %s\n", str);
+	nbr = gather_float(elem, nbr / l);
+		//printf("print_float_nb  nbr%Lf\n", nbr);
+	str = ft_join_float(str, build_float_str(elem, nbr));
+		//printf("print_float_nb %s\n", str);
+	str = ft_join_float(str, ((nbr >= 1) ? ft_strdup("e+") : ft_strdup("e-")));
+	if (tick < 10)
+		str = ft_join_float(str,  ft_strdup("0"));
+	str = ft_join_float(str, itoa_base(elem, tick));
+//elem->xx  itoa_base(elem, bighigh);
+	len = ft_strlen(str);
+	len += print_atoi_flags(str, elem, len);
+	return (len);
+}
 
 
 
@@ -1006,6 +1036,10 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 	{	
 		//printf("elem->type %c\n", elem->type);	
 		len += print_float_nbr(arg, elem);
+	}
+	else if (elem->type && ft_strchr("eE", elem->type))
+	{
+		len += print_floate_nbr(arg, elem);
 	}
 	else if (elem->type == 'n')
 	{
