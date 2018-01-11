@@ -800,7 +800,7 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 		while (++i < elem->precis)
 			m /= elem->base;
 		//printf("fix_droby c %.20Lf m %.20Lf c+m %.20Lf\n", c, m, c + m );
-		//printf("fix_droby nbr %.20Lf m %.20Lf nbr+m %.20Lf\n", nbr, m, nbr + m );
+	//printf("fix_droby nbr %.20Lf m %.20Lf nbr+m %.20Lf\n", nbr, m, nbr + m );
 		return (nbr + m);
 	}
 	return (nbr);
@@ -863,7 +863,7 @@ size_t		print_float_nbr(va_list arg, t_bone *elem)
 
 	len = 0;
 	nbr = 0;
-	str = ft_memalloc(sizeof(str));
+	str = ft_memalloc(sizeof(str));	
 	if (elem->mod_l && !ft_strcmp(elem->mod_l, "L"))
 		nbr = va_arg(arg, long double);
 	else
@@ -904,6 +904,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 		nbr = va_arg(arg, long double);
 	else
 		nbr = va_arg(arg, double);
+	//printf("elem->mod_l %s\n", elem->mod_l);
 	elem->flag = (nbr < 0) ? '-' : elem->flag;
 	//printf("nbr %.20Lf\n", nbr);
 	nbr = (nbr < 0) ? -nbr : nbr;	
@@ -915,7 +916,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 		{
 			tick++;
 			l *= elem->base;
-		}		
+		}
 	else
 		while (nbr && nbr / l <  1)
 		{
@@ -1113,7 +1114,7 @@ void	filllength(const char **format, t_bone *elem)
 
 			str = ft_memalloc(2);// (char *)(*format - 1)[0];
 			*str = (char)(*format - 1)[0];
-			//printf("st %s\n", str);
+			//printf("!! st %s\n", str);
 			elem->mod_l = ft_strdup(str);
 			free(str);
 		}
