@@ -840,6 +840,8 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 
 	j = elem->precis;
 	elem->precis = 0;//itoa base
+	if (elem->g_mode == 1) // gG behavior
+		j = 5;
 	str = ft_memalloc(sizeof(str));
 	//printf("nbr %Lf\n", nbr);
 	while (j > 0)
