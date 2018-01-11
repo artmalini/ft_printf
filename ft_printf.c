@@ -886,6 +886,17 @@ size_t		print_float_nbr(va_list arg, t_bone *elem)
 }
 
 
+
+void		xx_upper(char *str)
+{
+	while (*str != '\0')
+	{
+		if (*str == 'e')
+			*str = 'E';
+		str++;
+	}
+}
+
 size_t		print_floate_nbr(va_list arg, t_bone *elem)
 {
 	size_t 	len;
@@ -935,6 +946,8 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 		str = ft_join_float(str,  ft_strdup("0"));
 	str = ft_join_float(str, itoa_base(elem, tick));
 //elem->xx  itoa_base(elem, bighigh);
+	(elem->xx == 1) ? xx_upper(str) : str;
+	//printf("%s\n", str);
 	len = ft_strlen(str);
 	len += print_atoi_flags(str, elem, len);
 	return (len);
