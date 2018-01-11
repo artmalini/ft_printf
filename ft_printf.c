@@ -891,6 +891,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	size_t 	len;
 	long double nbr;
 	long double l;
+	long double tmp_nbr;
 	char *str;
 	int  tick;
 
@@ -904,7 +905,9 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	else
 		nbr = va_arg(arg, double);
 	elem->flag = (nbr < 0) ? '-' : elem->flag;
-	nbr = (nbr < 0) ? -nbr : nbr;
+	//printf("nbr %.20Lf\n", nbr);
+	nbr = (nbr < 0) ? -nbr : nbr;	
+	tmp_nbr = nbr;// e
 	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
 
 	if (nbr >= 1)
@@ -919,14 +922,14 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 			tick++;
 			l /= elem->base;
 		}
-	//printf("l %.20Lf tick %d\n", l, tick);
+	//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
 	str = gather_mantissa(elem, nbr / l);
 		//printf("print_float_nb %s\n", str);
 	nbr = gather_float(elem, nbr / l);
 		//printf("print_float_nb  nbr%Lf\n", nbr);
 	str = ft_join_float(str, build_float_str(elem, nbr));
 		//printf("print_float_nb %s\n", str);
-	str = ft_join_float(str, (elem->flag == '-') ? ft_strdup("e-") : ft_strdup("e+"));
+	str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("e+") : ft_strdup("e-")));
 	if (tick < 10)
 		str = ft_join_float(str,  ft_strdup("0"));
 	str = ft_join_float(str, itoa_base(elem, tick));
