@@ -25,6 +25,8 @@ typedef struct 		s_bone
 	int 			flag;
 	int 			width;
 	int 			precis;
+	int 			g_mode;
+	//int 			g_mode_on;
 	unsigned short 			xx;
 }					t_bone;
 
@@ -847,6 +849,11 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 			//printf("build_float_str nbr %Lf i %d elem->precis\n", nbr, i);
 		if (j == 1 && nbr >= .55)
 			i++;
+		/*if (j == 1 && nbr <= 0.1 && elem->g_mode == 1)
+		{
+			printf("YEP\n");
+			elem->g_mode_on = 1;		
+		}*/
 		str = ft_join_float(str, itoa_base(elem, i));			
 		nbr *= 10;
 		nbr -= i;
@@ -865,6 +872,33 @@ void		xx_upper(char *str)
 		str++;
 	}
 	//return (str);
+}
+
+char	*ft_chrrepl_trailing(char *s, char c, char r)
+{
+	char *str;
+	char a;
+
+	str = s;
+	if (s && *s)
+	{
+		a = *s;
+		*s = 0;
+		s++;
+		while (*s)
+			s++;
+		if (str - s)
+		{			
+			while (*(--s) == c)
+			{
+				//printf("ft_chrrepl_trailing str - s %c\n", *s);
+				*s = r;
+			}
+		}
+		*str = a;
+	}
+	//printf("cherepl str %s\n", str);
+	return (str);
 }
 
 char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
@@ -899,9 +933,12 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 		//nbr = (elem->precis >= .5) ? nbr + .000001 : nbr;
 			//printf("print_float_nb  nbr%Lf\n", nbr);
 		str = ft_join_float(str, build_float_str(elem, nbr));
+		if (elem->g_mode == 1)
+			str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
 	}
 	else 
-	{//gGeE
+	{
+	//!!!!!!!!!!!!!!!!!!! gGeE
 		if (nbr >= 1)
 		while (nbr / l >= elem->base)
 		{
@@ -920,13 +957,18 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 		nbr = gather_float(elem, nbr / l);
 		//printf("print_float_nb  nbr%Lf\n", nbr);
 		str = ft_join_float(str, build_float_str(elem, nbr));
+
 		//printf("print_float_nb %s\n", str);
+		if (elem->g_mode == 1)
+			str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
 		str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("e+") : ft_strdup("e-")));
 		if (tick < 10)
-		str = ft_join_float(str,  ft_strdup("0"));
+			str = ft_join_float(str,  ft_strdup("0"));
 		str = ft_join_float(str, itoa_base(elem, tick));
 	//elem->xx  itoa_base(elem, bighigh);
 		(elem->xx == 1) ? xx_upper(str) : str;
+		
+		
 	}
 
 		//printf("print_float_nb %s\n", str);
@@ -964,7 +1006,13 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 
 	if (ft_strchr("gG", elem->type))
 	{
+		if ((nbr && nbr < .00001) || nbr_power(elem->base, elem->precis) <= nbr)
+			elem->type -= 2;
+		else
+			elem->type -= 1;
+		elem->g_mode = 1;		
 		str = print_float_nbr(elem, nbr, str);
+		//str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
 	}
 	else
 		str = print_float_nbr(elem, nbr, str);
@@ -1267,6 +1315,8 @@ void	fillmas(t_bone *elem)
 	elem->precis = -1;
 	elem->prefix = 0;
 	elem->xx = 0;
+	elem->g_mode = 0;
+	//elem->g_mode_on = 0;
 }
 
 void	build_flags(const char **format, va_list arg, t_bone *elem)
