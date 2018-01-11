@@ -1006,6 +1006,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 
 	if (ft_strchr("gG", elem->type))
 	{
+		elem->precis = (elem->precis == 0) ? 1 : elem->precis;
 		if ((nbr && nbr < .00001) || nbr_power(elem->base, elem->precis) <= nbr)
 			elem->type -= 2;
 		else
