@@ -911,18 +911,22 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
 
 	if (nbr >= 1)
+	{
 		while (nbr / l >= elem->base)
 		{
 			tick++;
 			l *= elem->base;
 		}
+	}		
 	else
+	{
 		while (nbr && nbr / l <  1)
 		{
 			tick++;
 			l /= elem->base;
 		}
-	printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
+	}
+	//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
 	str = gather_mantissa(elem, nbr / l);
 		//printf("print_float_nb %s\n", str);
 	nbr = gather_float(elem, nbr / l);
