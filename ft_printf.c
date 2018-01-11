@@ -330,24 +330,24 @@ static char	*ft_wctos(wchar_t c)
 
 	s = ft_memalloc(sizeof(*s) * 5);
 	if ((e = s) && c <= 0x7F)//127
-		*e++ = c;
+		e[0] = c;
 	else if (c <= 0x7FF)//2047
 	{
-		*e++ = (c >> 6) | 0xC0;//0xC0 192
-		*e++ = (c & 0x3F) | 0x80;//0x3F 63 0x80 128
+		e[0] = (c >> 6) | 0xC0;//0xC0 192
+		e[1] = (c & 0x3F) | 0x80;//0x3F 63 0x80 128
 	}
 	else if (c <= 0xFFFF)//65535
 	{
-		*e++ = (c >> 12) | 0xE0;//0xE0 224
-		*e++ = ((c >> 6) & 0x3F) | 0x80;
-		*e++ = (c & 0x3F) | 0x80;
+		e[0] = (c >> 12) | 0xE0;//0xE0 224
+		e[1] = ((c >> 6) & 0x3F) | 0x80;
+		e[2] = (c & 0x3F) | 0x80;
 	}
 	else if (c <= 0x10FFFF)//1114111
 	{
-		*e++ = (c >> 18) | 0xF0;//0xF0 240
-		*e++ = ((c >> 12) & 0x3F) | 0x80;
-		*e++ = ((c >> 6) & 0x3F) | 0x80;
-		*e++ = (c & 0x3F) | 0x80;//63  128
+		e[0] = (c >> 18) | 0xF0;//0xF0 240
+		e[1] = ((c >> 12) & 0x3F) | 0x80;
+		e[2] = ((c >> 6) & 0x3F) | 0x80;
+		e[3] = (c & 0x3F) | 0x80;//63  128
 	}
 	//*e++ = '\0';
 	return (s);
@@ -855,9 +855,21 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 	return (str);
 }
 
-size_t		print_float_nbr(va_list arg, t_bone *elem)
+
+void		xx_upper(char *str)
 {
-	size_t 	len;
+	while (*str != '\0')
+	{
+		if (*str == 'e' || *str == 'f')
+			*str -= 32;
+		str++;
+	}
+	//return (str);
+}
+
+char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
+{
+	/*size_t 	len;
 	long double nbr;
 	char *str;
 
@@ -870,46 +882,74 @@ size_t		print_float_nbr(va_list arg, t_bone *elem)
 		nbr = va_arg(arg, double);
 	elem->flag = (nbr < 0) ? '-' : elem->flag;
 	nbr = (nbr < 0) ? -nbr : nbr;
-	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
+	elem->precis = (elem->precis == -1) ? 6 : elem->precis;*/
+	int  tick;
+	long double l;
+	long double tmp_nbr;
 
-	str = gather_mantissa(elem, nbr);
-		//printf("print_float_nb %s\n", str);
-	nbr = gather_float(elem, nbr);
-	//nbr = (elem->precis >= .5) ? nbr + .000001 : nbr;
-		//printf("print_float_nb  nbr%Lf\n", nbr);
-	str = ft_join_float(str, build_float_str(elem, nbr));
-		//printf("print_float_nb %s\n", str);
-
-	len = ft_strlen(str);
-	len += print_atoi_flags(str, elem, len);
-	return (len);
-}
-
-
-
-void		xx_upper(char *str)
-{
-	while (*str != '\0')
-	{
-		if (*str == 'e')
-			*str = 'E';
-		str++;
+	tick = 0;
+	l = 1;
+	tmp_nbr = nbr;
+	if (ft_strchr("fF", elem->type))
+	{		
+		//if (gG)
+		str = gather_mantissa(elem, nbr);
+			//printf("print_float_nb %s\n", str);
+		nbr = gather_float(elem, nbr);
+		//nbr = (elem->precis >= .5) ? nbr + .000001 : nbr;
+			//printf("print_float_nb  nbr%Lf\n", nbr);
+		str = ft_join_float(str, build_float_str(elem, nbr));
 	}
+	else 
+	{//gGeE
+		if (nbr >= 1)
+		while (nbr / l >= elem->base)
+		{
+			tick++;
+			l *= elem->base;
+		}
+		else
+			while (nbr && nbr / l <  1)
+		{
+			tick++;
+			l /= elem->base;
+		}
+		//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
+		str = gather_mantissa(elem, nbr / l);
+		//printf("print_float_nb %s\n", str);
+		nbr = gather_float(elem, nbr / l);
+		//printf("print_float_nb  nbr%Lf\n", nbr);
+		str = ft_join_float(str, build_float_str(elem, nbr));
+		//printf("print_float_nb %s\n", str);
+		str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("e+") : ft_strdup("e-")));
+		if (tick < 10)
+		str = ft_join_float(str,  ft_strdup("0"));
+		str = ft_join_float(str, itoa_base(elem, tick));
+	//elem->xx  itoa_base(elem, bighigh);
+		(elem->xx == 1) ? xx_upper(str) : str;
+	}
+
+		//printf("print_float_nb %s\n", str);
+
+	//len = ft_strlen(str);
+	//len += print_atoi_flags(str, elem, len);
+	return (str);
 }
+
 
 size_t		print_floate_nbr(va_list arg, t_bone *elem)
 {
 	size_t 	len;
 	long double nbr;
-	long double l;
-	long double tmp_nbr;
+	//long double l;
+	//long double tmp_nbr;
 	char *str;
-	int  tick;
+	//int  tick;
 
 	len = 0;
 	nbr = 0;
-	l = 1;
-	tick = 0;
+	//l = 1;
+	//tick = 0;
 	str = ft_memalloc(sizeof(str));
 	if (elem->mod_l && !ft_strcmp(elem->mod_l, "L"))
 		nbr = va_arg(arg, long double);
@@ -919,37 +959,21 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	elem->flag = (nbr < 0) ? '-' : elem->flag;
 	//printf("nbr %.20Lf\n", nbr);
 	nbr = (nbr < 0) ? -nbr : nbr;	
-	tmp_nbr = nbr;// e
+	//tmp_nbr = nbr;// e
 	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
 
-	if (nbr >= 1)
-		while (nbr / l >= elem->base)
-		{
-			tick++;
-			l *= elem->base;
-		}
+	if (ft_strchr("gG", elem->type))
+	{
+		str = print_float_nbr(elem, nbr, str);
+	}
 	else
-		while (nbr && nbr / l <  1)
-		{
-			tick++;
-			l /= elem->base;
-		}
-	//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
-	str = gather_mantissa(elem, nbr / l);
-		//printf("print_float_nb %s\n", str);
-	nbr = gather_float(elem, nbr / l);
-		//printf("print_float_nb  nbr%Lf\n", nbr);
-	str = ft_join_float(str, build_float_str(elem, nbr));
-		//printf("print_float_nb %s\n", str);
-	str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("e+") : ft_strdup("e-")));
-	if (tick < 10)
-		str = ft_join_float(str,  ft_strdup("0"));
-	str = ft_join_float(str, itoa_base(elem, tick));
-//elem->xx  itoa_base(elem, bighigh);
-	(elem->xx == 1) ? xx_upper(str) : str;
-	//printf("%s\n", str);
+		str = print_float_nbr(elem, nbr, str);
+
+
 	len = ft_strlen(str);
 	len += print_atoi_flags(str, elem, len);
+
+	//printf("%s\n", str);
 	return (len);
 }
 
@@ -1049,15 +1073,15 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		//printf("elem->type %c\n", elem->type);	
 		len += print_atoi_nbr(arg, elem);
 	}
-	else if (elem->type && ft_strchr("fF", elem->type))
+	else if (elem->type && ft_strchr("fFeEgG", elem->type))
 	{	
 		//printf("elem->type %c\n", elem->type);	
-		len += print_float_nbr(arg, elem);
-	}
-	else if (elem->type && ft_strchr("eE", elem->type))
-	{
 		len += print_floate_nbr(arg, elem);
 	}
+	//else if (elem->type && ft_strchr("eE", elem->type))
+	//{
+	//	len += print_floate_nbr(arg, elem);
+	//}
 	else if (elem->type == 'n')
 	{
 		//*va_arg(arg, int*) = ln;
