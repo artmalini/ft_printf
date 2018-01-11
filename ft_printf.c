@@ -849,7 +849,7 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 		//printf("build_float_str nbr %.16Lf\n", nbr);
 		i = nbr * 10;
 			//printf("build_float_str nbr %Lf i %d elem->precis\n", nbr, i);
-		if (j == 1 && nbr >= .55)
+		if (j == 1 && nbr >= .55 && !elem->g_mode)
 			i++;
 		/*if (j == 1 && nbr <= 0.1 && elem->g_mode == 1)
 		{
