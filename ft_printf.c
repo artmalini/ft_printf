@@ -787,7 +787,7 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 		if (traverse(elem->base, m) < .5)
 		{
 			//printf("yep < .5 \n");
-			m -= traverse(elem->base, m) + .1;
+			m = m - traverse(elem->base, m) + .1;
 			//printf("yep m %Lf\n", m);
 		}
 		else if (traverse(elem->base, m) >= .5)
