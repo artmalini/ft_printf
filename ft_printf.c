@@ -766,7 +766,7 @@ long double 	traverse(long double elmbase, long double nbr)
 		u /= nbr_power(elmbase, 8);
 	}
 	//printf("traverse nbr end %.20Lf\n", u);	
-	return (u);
+	return (nbr);
 }
 
 long double 	fix_droby(t_bone *elem, long double nbr)
@@ -776,14 +776,14 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 	int			i;
 
 	//if ((i = elem->precis) != -1)
-	i = -1;
+	i = elem->precis;
 	if (elem->precis != -1)
 	{
 		m = traverse(elem->base, nbr);
 		c = nbr - m;
 		//printf(" fix_droby nbr %.20Lf m %.20Lf c %Lf\n", nbr, m, c);
-		//while (i-- > 0)
-		//	m *= elem->base;
+		while (i-- > 0)
+			m *= elem->base;
 		if (traverse(elem->base, m) < .5)
 		{
 			//printf("yep < .5 \n");
@@ -801,7 +801,7 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 			m /= elem->base;
 		//printf("fix_droby c %.20Lf m %.20Lf c+m %.20Lf\n", c, m, c + m );
 	//printf("fix_droby nbr %.20Lf m %.20Lf nbr+m %.20Lf\n", nbr, m, nbr + m );
-		return (nbr + m);
+		return (c + m);
 	}
 	return (nbr);
 }
