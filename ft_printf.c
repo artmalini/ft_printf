@@ -845,7 +845,7 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 		//printf("build_float_str nbr %.16Lf\n", nbr);
 		i = nbr * 10;
 			//printf("build_float_str nbr %Lf i %d elem->precis\n", nbr, i);
-		if (j == 1 && nbr >= .5)
+		if (j == 1 && nbr >= .55)
 			i++;
 		str = ft_join_float(str, itoa_base(elem, i));			
 		nbr *= 10;
@@ -911,21 +911,17 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
 
 	if (nbr >= 1)
-	{
 		while (nbr / l >= elem->base)
 		{
 			tick++;
 			l *= elem->base;
-		}
-	}		
+		}		
 	else
-	{
 		while (nbr && nbr / l <  1)
 		{
 			tick++;
 			l /= elem->base;
 		}
-	}
 	//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
 	str = gather_mantissa(elem, nbr / l);
 		//printf("print_float_nb %s\n", str);
