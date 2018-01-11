@@ -922,7 +922,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 			tick++;
 			l /= elem->base;
 		}
-	//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
+	printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
 	str = gather_mantissa(elem, nbr / l);
 		//printf("print_float_nb %s\n", str);
 	nbr = gather_float(elem, nbr / l);
