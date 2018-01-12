@@ -571,7 +571,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
 		return (NULL);	
 	*(itoa + len) = 0;
-	while (i < len || bighigh != 0)
+	while (i < len)
 	{
 		*(itoa + --len) = str[bighigh % elem->base];
 		//i++;
@@ -662,7 +662,7 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 
 	//printf("!!!!!!!!!!!!!!bighigh %zu\n", bighigh);
 
-	if (ft_strchr("oO", elem->type))
+	if (bighigh == 0 && ft_strchr("oO", elem->type))
 	{
 		if (elem->hex)
 			free(elem->hex);
