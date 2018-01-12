@@ -980,7 +980,7 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 
 		if (tick == 0 && nmbase == 2)
 			str = str;
-		if (elem->precis == -1)
+		if (elem->precis == -1 && (tick != 0 && nmbase == 2))
 			str = ft_join_float(str, ft_strdup("."));
 
 		str = ft_join_float(str, build_float_str(elem, nbr));
