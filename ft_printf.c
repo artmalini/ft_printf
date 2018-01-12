@@ -662,7 +662,7 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 
 	//printf("!!!!!!!!!!!!!!bighigh %zu\n", bighigh);
 
-	if (bighigh == 0 && ft_strchr("oO", elem->type))
+	if (ft_strchr("oO", elem->type))
 	{
 		if (elem->hex)
 			free(elem->hex);
