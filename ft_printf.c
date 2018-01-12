@@ -1020,7 +1020,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	nbr = 0;
 	//l = 1;
 	//tick = 0;
-	str = ft_memalloc(sizeof(str));
+	str = NULL;
 	if (elem->mod_l && !ft_strcmp(elem->mod_l, "L"))
 		nbr = va_arg(arg, long double);
 	else
