@@ -287,7 +287,7 @@ void 	print_str_ln(char *str, size_t nbr)
 		write(1, str, nbr);
 }
 
-int		ft_char(char *str)
+size_t		ft_char(char *str)
 {
 	int 	len;
 
@@ -408,7 +408,7 @@ static char	*ft_wtoc_strdup(wchar_t *w)
 	return (ft_wtoc_strndup(w, len));
 }
 
-size_t		str_print(va_list arg, t_bone *elem)
+/*size_t		str_print(va_list arg, t_bone *elem)
 {
 	char *c;
 	char	*s;
@@ -435,7 +435,7 @@ size_t		str_print(va_list arg, t_bone *elem)
 		}
 	free(s);
 	return (len);
-}
+}*/
 
 static intmax_t		cast_signed_size_t(intmax_t num)
 {
@@ -978,8 +978,8 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 		nbr = gather_float(elem, nbr / l);
 		//printf("print_float_nb  nbr%Lf\n", nbr);
 
-		if (tick == 0 && nmbase == 2)
-			str = str;
+		//if (tick == 0 && nmbase == 2)
+		//	str = str;
 		if (elem->precis == -1 && (tick != 0 && nmbase == 2 && nbr > 0))
 			str = ft_join_float(str, ft_strdup("."));
 
