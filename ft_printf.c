@@ -881,7 +881,7 @@ void		xx_upper(char *str)
 {
 	while (*str != '\0')
 	{
-		if (*str == 'e' || *str == 'f' || *str == 'p')
+		if (*str >= 'a' && *str <= 'p')
 			*str -= 32;
 		str++;
 	}
