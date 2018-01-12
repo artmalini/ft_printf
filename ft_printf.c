@@ -27,6 +27,7 @@ typedef struct 		s_bone
 	int 			precis;
 	int 			g_mode;
 	//int 			g_mode_on;
+	//int 			a_mode;
 	unsigned short 			xx;
 }					t_bone;
 
@@ -844,10 +845,10 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 		j = 5;
 	str = ft_memalloc(sizeof(str));
 	//printf("nbr %Lf\n", nbr);
-	while (j > 0)
+	while (j > 0 || (j < 0 && nbr))
 	{
 		//printf("build_float_str nbr %.16Lf\n", nbr);
-		i = nbr * 10;
+		i = nbr * elem->base;
 			//printf("build_float_str nbr %Lf i %d elem->precis\n", nbr, i);
 		if (j == 1 && nbr >= .55 && !elem->g_mode)
 			i++;
@@ -857,19 +858,30 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 			elem->g_mode_on = 1;		
 		}*/
 		str = ft_join_float(str, itoa_base(elem, i));			
-		nbr *= 10;
+		nbr *= elem->base;
 		nbr -= i;
 		j--;
 	}
 	return (str);
 }
 
-
+/*void		prf_suffix(t_bone *elem, char *str)
+{
+	if (ft_strchr("aA", elem->type))
+	{
+		while (*str != '\0')
+		{
+			if (*str == 'e')
+				*str -= 32;
+			str++;
+		}		
+	}
+}*/
 void		xx_upper(char *str)
 {
 	while (*str != '\0')
 	{
-		if (*str == 'e' || *str == 'f')
+		if (*str == 'e' || *str == 'f' || *str == 'p')
 			*str -= 32;
 		str++;
 	}
@@ -920,12 +932,14 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 	nbr = (nbr < 0) ? -nbr : nbr;
 	elem->precis = (elem->precis == -1) ? 6 : elem->precis;*/
 	int  tick;
+	int  nmbase;
 	long double l;
 	long double tmp_nbr;
 
 	tick = 0;
 	l = 1;
 	tmp_nbr = nbr;
+	nmbase = (ft_strchr("aA", elem->type) ? 2 : elem->base);
 	if (ft_strchr("fF", elem->type))
 	{		
 		//if (gG)
@@ -940,18 +954,22 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 	}
 	else 
 	{
-	//!!!!!!!!!!!!!!!!!!! gGeE
+	//!!!!!!!!!!!!!!!!!!! gGeEaA		/
 		if (nbr >= 1)
-		while (nbr / l >= elem->base)
 		{
-			tick++;
-			l *= elem->base;
+			while (nbr / l >= nmbase)
+			{
+				tick++;
+				l *= nmbase;
+			}
 		}
 		else
-			while (nbr && nbr / l <  1)
 		{
-			tick++;
-			l /= elem->base;
+			while (nbr && nbr / l <  1)
+			{
+				tick++;
+				l /= nmbase;
+			}
 		}
 		//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
 		str = gather_mantissa(elem, nbr / l);
@@ -963,8 +981,9 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 		//printf("print_float_nb %s\n", str);
 		if (elem->g_mode == 1)
 			str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
-		str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("e+") : ft_strdup("e-")));
-		if (tick < 10)
+		str = ft_join_float(str, (nmbase != 2) ? ft_strdup("e") : ft_strdup("p"));
+		str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("+") : ft_strdup("-")));
+		if (tick < 10 && nmbase != 2)
 			str = ft_join_float(str,  ft_strdup("0"));
 		str = ft_join_float(str, itoa_base(elem, tick));
 	//elem->xx  itoa_base(elem, bighigh);
@@ -1004,7 +1023,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	//printf("nbr %.20Lf\n", nbr);
 	nbr = (nbr < 0) ? -nbr : nbr;	
 	//tmp_nbr = nbr;// e
-	elem->precis = (elem->precis == -1) ? 6 : elem->precis;
+	elem->precis = (elem->precis == -1 && !ft_strchr("aA", elem->type)) ? 6 : elem->precis;
 
 	if (ft_strchr("gG", elem->type))
 	{
@@ -1124,7 +1143,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		//printf("elem->type %c\n", elem->type);	
 		len += print_atoi_nbr(arg, elem);
 	}
-	else if (elem->type && ft_strchr("fFeEgG", elem->type))
+	else if (elem->type && ft_strchr("fFeEaAgG", elem->type))
 	{	
 		//printf("elem->type %c\n", elem->type);	
 		len += print_floate_nbr(arg, elem);
@@ -1269,7 +1288,7 @@ void	filltype(const char **format, t_bone *elem)
 		elem->xx = (ft_strchr("XEGA", **format)) ? 1 : 0;
 		elem->base = (ft_strchr("b", **format) ? 2 : elem->base);
 		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
-		elem->base = (ft_strchr("pxX", **format) ? 16 : elem->base);
+		elem->base = (ft_strchr("pxXaA", **format) ? 16 : elem->base);
 		if (ft_strchr("DOUCS", **format))
 		{
 			if (elem->mod_l)
