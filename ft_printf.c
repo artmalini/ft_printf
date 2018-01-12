@@ -719,7 +719,8 @@ char 	*gather_mantissa(t_bone *elem, long double nbr)
 		val /= elem->base;
 	}
 	elem->precis = tmp;
-	str = ft_join_float(str, ft_strdup("."));
+	if (elem->precis > 0) 
+		str = ft_join_float(str, ft_strdup("."));
 	return (str);
 }
 
@@ -973,18 +974,24 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 		}
 		//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
 		str = gather_mantissa(elem, nbr / l);
-		//printf("print_float_nb %s\n", str);
+		//printf("print_float_nb mant %s\n", str);
 		nbr = gather_float(elem, nbr / l);
 		//printf("print_float_nb  nbr%Lf\n", nbr);
-		str = ft_join_float(str, build_float_str(elem, nbr));
 
+		if (tick == 0 && nmbase == 2)
+			str = str;
+		else
+			str = ft_join_float(str, ft_strdup("."));
+
+		str = ft_join_float(str, build_float_str(elem, nbr));
 		//printf("print_float_nb %s\n", str);
-		if (elem->g_mode == 1)
-			str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
+		//if (elem->g_mode == 1)
+		//	str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
 		str = ft_join_float(str, (nmbase != 2) ? ft_strdup("e") : ft_strdup("p"));
 		str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("+") : ft_strdup("-")));
 		if (tick < 10 && nmbase != 2)
 			str = ft_join_float(str,  ft_strdup("0"));
+		elem->base = 10;//16 change to 10 on  aA
 		str = ft_join_float(str, itoa_base(elem, tick));
 	//elem->xx  itoa_base(elem, bighigh);
 		(elem->xx == 1) ? xx_upper(str) : str;
@@ -1170,7 +1177,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 
 void	fillflag(const char **f, t_bone *elem)
 {
-	while (**f == '+' || **f == ' '|| **f == '-' || **f == '0' || **f == '#')
+	while (**f == '+' || **f == ' ' || **f == '-' || **f == '0' || **f == '#')
 	{
 		if (**f == '+')
 			elem->flag = '+';
