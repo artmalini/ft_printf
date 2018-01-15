@@ -574,7 +574,6 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	while (i < len)
 	{
 		*(itoa + --len) = str[bighigh % elem->base];
-		//i++;
 		bighigh /= elem->base;
 	}
 	//i++;
@@ -1197,45 +1196,6 @@ void	fillflag(const char **f, t_bone *elem)
 	//printf("elem->left %d\n", elem->left);
 }
 
-void	filllength(const char **format, t_bone *elem)
-{
-	char 	*str;
-	if (ft_strchr("hljzqL", **format))
-	{
-		//printf("filllength %c\n", **format);
-		(*format)++;//to the next symbol
-		if (elem->mod_l)
-			free(elem->mod_l);
-
-		//elem->mod_l = NULL;
-		if (**format == 'h' || **format == 'l')
-		{
-			if (**format == 'h')
-				elem->mod_l = ft_strdup("hh");
-			else
-				elem->mod_l = ft_strdup("ll");
-			//printf("elem->mod_l %s\n", elem->mod_l);
-			(*format)++;
-		}
-		else
-		{
-			//elem->mod_l = (**format == 'h') ? ft_strdup("h") : NULL;
-			//elem->mod_l = ((*format - 1)[0] == 'l') ? ft_strdup("l") : NULL;
-			//elem->mod_l = (**format == 'j') ? ft_strdup("j") : NULL;
-			//elem->mod_l = (**format == 'z') ? ft_strdup("z") : NULL;
-			//elem->mod_l = (**format == 'q') ? ft_strdup("q") : NULL;
-			//elem->mod_l = (**format == 'L') ? ft_strdup("L") : NULL;
-
-			str = ft_memalloc(2);// (char *)(*format - 1)[0];
-			*str = (char)(*format - 1)[0];
-			//printf("!! st %s\n", str);
-			elem->mod_l = ft_strdup(str);
-			free(str);
-		}
-		//elem->mod_l = "l";
-		//printf("filllength %c\n", (*format - 1)[0]);
-	}
-}
 
 void 	fillwidth(const char **format, va_list arg, t_bone *elem)
 {
@@ -1285,6 +1245,46 @@ void 	fillprecis(const char **format, va_list arg, t_bone *elem)
 		}
 	}
 	//printf("fillprecis %zu\n", elem->precis);
+}
+
+void	filllength(const char **format, t_bone *elem)
+{
+	char 	*str;
+	if (**format && ft_strchr("hljzqL", **format))
+	{
+		//printf("filllength %c\n", **format);
+		(*format)++;//to the next symbol
+		if (elem->mod_l)
+			free(elem->mod_l);
+
+		//elem->mod_l = NULL;
+		if (**format == 'h' || **format == 'l')
+		{
+			if (**format == 'h')
+				elem->mod_l = ft_strdup("hh");
+			else
+				elem->mod_l = ft_strdup("ll");
+			//printf("elem->mod_l %s\n", elem->mod_l);
+			(*format)++;
+		}
+		else
+		{
+			//elem->mod_l = (**format == 'h') ? ft_strdup("h") : NULL;
+			//elem->mod_l = ((*format - 1)[0] == 'l') ? ft_strdup("l") : NULL;
+			//elem->mod_l = (**format == 'j') ? ft_strdup("j") : NULL;
+			//elem->mod_l = (**format == 'z') ? ft_strdup("z") : NULL;
+			//elem->mod_l = (**format == 'q') ? ft_strdup("q") : NULL;
+			//elem->mod_l = (**format == 'L') ? ft_strdup("L") : NULL;
+
+			str = ft_memalloc(2);// (char *)(*format - 1)[0];
+			*str = (char)(*format - 1)[0];
+			//printf("!! st %s\n", str);
+			elem->mod_l = ft_strdup(str);
+			free(str);
+		}
+		//elem->mod_l = "l";
+		//printf("filllength %c\n", (*format - 1)[0]);
+	}
 }
 
 void	filltype(const char **format, t_bone *elem)
