@@ -1605,7 +1605,7 @@ int 	ft_printf(const char *format, ...)
 
 	i =	ft_printf("%#8x\n", 42);
 	j = printf("%#8x\n", 42);
-	printf("My %d Basic %d\n", i, j);
+	printf("My %d Basic %d\ n", i, j);
 
 	i =	ft_printf("%5%\n");
 	j = printf("%5%\n");
