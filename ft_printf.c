@@ -578,7 +578,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 		return (NULL);	
 	*(itoa + len) = 0;
 	//while (i < len && (elem->precis != 0 || tmpbig > 1))
-	while (i < len && ((elem->precis != 0 || tmpbig > 1) || (elem->type && ft_strchr("fF", elem->type))))
+	while (i < len && ((elem->precis != 0 || tmpbig > 1) || (elem->type && ft_strchr("fFeEaA", elem->type))))
 	{
 		*(itoa + --len) = str[bighigh % elem->base];
 		//i++;
@@ -1605,10 +1605,10 @@ int 	ft_printf(const char *format, ...)
 
 	i =	ft_printf("%#8x\n", 42);
 	j = printf("%#8x\n", 42);
-	printf("My %d Basic %d\ n", i, j);
+	printf("My %d Basic %d\n", i, j);
 
 	i =	ft_printf("%5%\n");
-	j = printf("%5%\n");
+	//j = printf("%5%\n");
 	printf("My %d Basic %d\n", i, j);
 
 	i =	ft_printf("%   %", "test");
@@ -1690,6 +1690,11 @@ int 	ft_printf(const char *format, ...)
 
 	i = ft_printf("@main_ftprintf: %###-#0000 33...12..#0+0d", 256);
 	printf("My %d\n", i);
+
+
+		i =	ft_printf("%e\n", 	-0.9265e-2);
+	j = printf("%e\n", 	-0.9265e-2);
+	printf("Moi %d Base : %d\n", i, j);
 	//ft_printf("%20.-5d\n", 4);
 	//printf("%20.-5d\n", 4);
 	//ft_printf("%");
