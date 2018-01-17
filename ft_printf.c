@@ -1530,6 +1530,7 @@ int 	ft_printf(const char *format, ...)
 	j = printf("%#x\n", 0);
 	printf("My %d Basic %d\n", i, j);
 
+
 	i =	ft_printf("@moulitest: %#.x %#.0x\n", 0, 0);
 	j = printf("@moulitest: %#.x %#.0x\n", 0, 0);
 	printf("My %d Basic %d\n", i, j);
