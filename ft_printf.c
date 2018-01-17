@@ -1690,6 +1690,12 @@ int 	ft_printf(const char *format, ...)
 
 	i = ft_printf("@main_ftprintf: %###-#0000 33...12..#0+0d", 256);
 	printf("My %d\n", i);
+
+		i = ft_printf("% +-#5.4hd\n", -25);
+	printf("My %d\n", i);
+
+			i = ft_printf("% +-#5.4tu\n", -25);
+	printf("My %d\n", i);
 	//ft_printf("%20.-5d\n", 4);
 	//printf("%20.-5d\n", 4);
 	//ft_printf("%");
