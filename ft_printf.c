@@ -1378,7 +1378,7 @@ void	filllength(const char **format, t_bone *elem)
 	//printf("filllength end %c\n", **format);
 }
 
-void	filltype(const char **format, t_bone *elem)
+/*void	filltype(const char **format, t_bone *elem)
 {
 	//printf("filltype %c\n", **format);
 	//printf("filltype elem->type %d\n", **format);
@@ -1640,5 +1640,5 @@ int 		main(void)
 	ft_printf("{%05.s}\n", 0);
 
 	return (0);
-}
+}*/
 
