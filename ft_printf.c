@@ -299,7 +299,7 @@ size_t		ft_char(char *str)
 	{
 		len++;
 		write(1, &(*str), 1);
-		//free(str);
+		free(str);		
 	}
 	return (len);
 }
@@ -1093,7 +1093,8 @@ char 	*build_char(va_list arg, t_bone *elem)
 		//printf("str %s\n", str); 
 		//str = ft_memalloc(sizeof(*str) * 2);
 		//*str = (char)va_arg(arg, int);
-		str = ft_memalloc(2);
+		if (!(str = ft_memalloc(2)))
+			return (NULL);
 		*str = (char)va_arg(arg, int);
 	}
 	//len = prf_putstr(str);
@@ -1146,7 +1147,8 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 	if (elem->type && ft_strchr("cC", elem->type))
 	{
 		//len = build_char(arg, elem);
-		str = build_char(arg, elem);
+		if (!(str = build_char(arg, elem)))
+			return (0);
 		len += ((ft_strlen(str) == 0) ? 0 : ft_strlen(str));
 		clen = len;
 		if (clen == 0 && !elem->left)
@@ -1154,12 +1156,13 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		len += ft_strlen(str) > 0 ? print_flags(str, elem, len) : ft_char(str);
 		if (clen == 0 && elem->left == 1)			
 			len += prf_nbr_putchar(elem->padding, elem->width - 1);
-		free(str);
+		//free(str);
 		//len += print_flags(str, elem, len); //`MALLOC error
 	}
 	else if (elem->type && ft_strchr("sS", elem->type))
 	{
-		str = build_str_char(arg, elem);
+		if (!(str = build_str_char(arg, elem)))
+			return (0);
 		len += ft_strlen(str);
 		len += print_flags(str, elem, len);
 		//len += build_str_char(arg, elem);
@@ -1206,9 +1209,11 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		//printf("parse_arg str %d len %zu str %zu\n", *str, len, ft_strlen(str));
 		if (elem->type && !ft_strchr("0", elem->type))
 			len += print_flags(str, elem, 1);
-		if (*str == 10 || *str == 0)
-			len = 0;
-		free(str);
+		//if (*str == 10 || *str == 0)
+		//	len = 0;
+		else
+			free(str);
+
 		//printf("parse_arg str %d len %zu str %zu\n", *str, len, ft_strlen(str));
 		//printf("parse_arg len %zu str %zu\n", len, ft_strlen(str));		
 		
@@ -1243,6 +1248,7 @@ void	fillflag(const char **f, t_bone *elem)
 		{
 			if (elem->hex)
 				free(elem->hex);
+			elem->hex = NULL;
 			elem->hex = ft_strdup("#");	
 		}
 		//else
@@ -1434,7 +1440,7 @@ void			fillhex(const char **format, t_bone *elem)
 	{
 		if (elem->hex)
 			free(elem->hex);
-		//elem->hex = NULL;
+		elem->hex = NULL;
 		if (**format && ft_strchr("oO", **format))
 			elem->hex = ft_strdup("0");
 		else if (**format && ft_strchr("pxa", **format))
@@ -1663,6 +1669,9 @@ int 	ft_printf(const char *format, ...)
 
 		ft_printf("%La\n", 9.0456L);
 	printf("%La\n", 9.0456L);
+
+			ft_printf("%e\n", 9.00);
+	printf("%e\n", 9.00);
 
 	//ft_printf("%b\n", 1);
 	//ft_printf("%b\n", 2);
