@@ -694,44 +694,44 @@ long double 	fix_droby_float(long double elmbase, long double nbr)
 
 long double 	fix_droby(t_bone *elem, long double nbr)
 {
-	long double	m;
-	long double	c;
-	int			i;
+	long double		prefix;
+	long double		first;	
+	int				i;
 
 	//if ((i = elem->precis) != -1)
 	i = elem->precis;
 	if (elem->precis != -1)
 	{
-		m = fix_droby_float(elem->base, nbr);
-		c = nbr - m;
-		//printf(" fix_droby nbr %.20Lf m %.20Lf c %.20Lf\n", nbr, m, c);
+		first = fix_droby_float(elem->base, nbr);
+		prefix = nbr - first;
+		//printf(" fix_droby nbr %.20Lf first %.20Lf prefix %.20Lf\n", nbr, first, prefix);
 		while (i-- > 0)
 		{	
 			//printf("first i %d\n", i);		
-			m *= elem->base;
-			//printf("m %.20Lf\n", m);
+			first *= elem->base;
+			//printf("first %.20Lf\n", first);
 		}
-		//printf(" fix_droby m %.20Lf\n", m);
-		if (fix_droby_float(elem->base, m) < .5)
+		//printf(" fix_droby first %.20Lf\n", first);
+		if (fix_droby_float(elem->base, first) < .5)
 		{
 			//printf("yep < .5 \n");
-			m -= fix_droby_float(elem->base, m);
-			m += .1;
-			//printf("yep m %Lf\n", m);
+			first -= fix_droby_float(elem->base, first);
+			first += .1;
+			//printf("yep first %Lf\n", first);
 		}
-		else if (fix_droby_float(elem->base, m) >= .5)
+		else if (fix_droby_float(elem->base, first) >= .5)
 		{
-			//printf("yep >= .5 m %.20Lf\n", m);
-			m -= fix_droby_float(elem->base, m);
-			m += 1.1;
+			//printf("yep >= .5 first %.20Lf\n", first);
+			first -= fix_droby_float(elem->base, first);
+			first += 1.1;
 			//printf("yep m %Lf\n", m);			
 		}
 		//printf("i %d\n", i);
 		while (++i < elem->precis)
-			m /= elem->base;
-		//printf("fix_droby c %.20Lf m %.20Lf c+m %.20Lf\n", c, m, c + m );
-	//printf("fix_droby nbr %.20Lf m %.20Lf nbr+m %.20Lf\n", nbr, m, nbr + m );
-		return (c + m);
+			first /= elem->base;
+		//printf("fix_droby prefix %.20Lf first %.20Lf prefix+first %.20Lf\n", prefix, first, prefix + first );
+	//printf("fix_droby nbr %.20Lf first %.20Lf nbr+first %.20Lf\n", nbr, first, nbr + first );
+		return (prefix + first);
 	}
 	return (nbr);
 }
@@ -1397,7 +1397,7 @@ void	filltype(const char **format, t_bone *elem)
 		elem->base = (ft_strchr("b", **format) ? 2 : elem->base);
 		elem->base = (ft_strchr("oO", **format) ? 8 : elem->base);
 		elem->base = (ft_strchr("pxXaA", **format) ? 16 : elem->base);
-		if (ft_strchr("DOUCS", **format))
+		if (**format && ft_strchr("DOUCS", **format))
 		{
 			//if (elem->mod_l)
 			//	free(elem->mod_l);
@@ -1583,7 +1583,7 @@ int 	ft_printf(const char *format, ...)
 	  ft_printf("{%f}{%F}\n", 1.42, 1.42);
 	  printf("{%f}{%F}\n", 1.42, 1.42);
 
-	 i = ft_printf("@moulitest: %.d %.0d\n", 0, 0);
+	 i = ft_printf("A@moulitest: %.d %.0d\n", 0, 0);
 	 j = printf("@moulitest: %.d %.0d\n", 0, 0);
 	 printf("My %d Basic %d\n", i, j);
 
@@ -1649,6 +1649,17 @@ int 	ft_printf(const char *format, ...)
 
 
 	ft_printf("{%05.s}\n", 0);
+
+	//ft_printf("%b\n", 1);
+	//ft_printf("%b\n", 2);
+	//ft_printf("%b\n", 3);
+	//ft_printf("%b\n", 4);
+	//ft_printf("%b\n", 5);
+	//ft_printf("%b\n", 6);
+	//ft_printf("%b\n", 7);
+	//ft_printf("%b\n", 8);
+	//ft_printf("%b\n", 9);
+	//ft_printf("%#b\n", 128);
 
 	return (0);
 }*/
