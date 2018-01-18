@@ -619,7 +619,7 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 			free(elem->hex);
 		elem->hex = NULL;
 	}	
-	if (bighigh != 0)
+	if (bighigh != 0 && elem->precis != 0)
 	{
 		//printf("%s, bighigh %ju\n", str, bighigh);
 		str = itoa_base(elem, bighigh);
