@@ -1212,7 +1212,10 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		//if (*str == 10 || *str == 0)
 		//	len = 0;
 		else
+		{
+			len = 0;
 			free(str);
+		}
 
 		//printf("parse_arg str %d len %zu str %zu\n", *str, len, ft_strlen(str));
 		//printf("parse_arg len %zu str %zu\n", len, ft_strlen(str));		
