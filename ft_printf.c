@@ -628,8 +628,8 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 
 		len += print_str_with_flags(str, elem, len);									//print flags
 	}
-	else
-		len += prf_nbr_putchar(elem->padding, elem->width);
+	//else
+	//	len += prf_nbr_putchar(elem->padding, elem->width);
 	//print_str_ln(str, ft_strlen(str));												//print numbers
 	//free(str);
 	return (len);
@@ -1683,6 +1683,7 @@ int 	ft_printf(const char *format, ...)
 			ft_printf("%e\n", 9.00);
 	printf("%e\n", 9.00);
 
+	ft_printf("%d\n", 00214748364);
 	//ft_printf("%b\n", 1);
 	//ft_printf("%b\n", 2);
 	//ft_printf("%b\n", 3);
@@ -1696,5 +1697,4 @@ int 	ft_printf(const char *format, ...)
 
 	return (0);
 }
-
 */
