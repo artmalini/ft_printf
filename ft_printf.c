@@ -173,7 +173,7 @@ char	*ft_strcat(char *s1, const char *s2)
 	return (mas);
 }
 
-int	ft_strcmp(const char *s1, const char *s2)
+int		ft_strcmp(const char *s1, const char *s2)
 {
 	while (*s1 && *s1 == *s2 && s1++ && s2++)
 		;
@@ -191,7 +191,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 }*/
 
 
-char	*ft_strdup(const char *s1)			//?? Т
+static char		*ft_strdup(const char *s1)			//?? Т
 {
 	int		len;
 	char	*str;
@@ -283,7 +283,7 @@ static int 		prf_putstr(char *str)
 	}
 }*/
 
-void 	print_str_ln(char *str, size_t nbr)
+void		print_str_ln(char *str, size_t nbr)
 {
 	if (str && nbr)
 		write(1, str, nbr);
@@ -303,7 +303,7 @@ size_t		ft_char(char *str)
 	}
 	return (len);
 }
-void	ft_strrev(char *s)
+/*void	ft_strrev(char *s)
 {
 	char *e;
 	char t;
@@ -320,7 +320,7 @@ void	ft_strrev(char *s)
 		*s++ = *e;
 		*e-- = t;
 	}
-}
+}*/
 
 
 
@@ -328,14 +328,14 @@ void	ft_strrev(char *s)
 
 
 
-//https://ru.wikipedia.org/wiki/UTF-8
-static char	*ft_wctos(wchar_t c)
+
+static char		*utf_char_unicode(wchar_t c)
 {
-	char	*s;
+	char	*str;
 	char	*e;
 
-	s = ft_memalloc(5);
-	if ((e = s) && c <= 0x7F)//127
+	str = ft_memalloc(5);
+	if ((e = str) && c <= 0x7F)//127
 		e[0] = c;
 	else if (c <= 0x7FF)//2047
 	{
@@ -355,8 +355,7 @@ static char	*ft_wctos(wchar_t c)
 		e[2] = ((c >> 6) & 0x3F) | 0x80;
 		e[3] = (c & 0x3F) | 0x80;//63  128
 	}
-	//*e++ = '\0';
-	return (s);
+	return (str);
 }
 
 /*
@@ -364,83 +363,55 @@ static char	*ft_wctos(wchar_t c)
 ** return string
 */
 
-static char	*ft_wtoc_strndup(wchar_t *w, size_t n)
+static char		*utf_char_len_concat(wchar_t *symb, size_t len)
 {
-	char	*s;
-	char	*t;
-	int		len;
+	char	*str;
+	char	*utf_str;
+	int		nbr;
 
 //printf("%d\n", 1);
-	if (w && (s = ft_memalloc((n + 1))))
+	if (symb && (str = ft_memalloc((len + 1))))
 	{
 		//printf("%d\n", 2);
-		len = n;
-		while (*w)
+		nbr = len;
+		while (*symb)
 		{
-			t = ft_wctos(*w++);
-			//printf("ft_wtoc_strndup t %s len n %zu ft_strlen(t) %zu\n", t, n, ft_strlen(t));
-			len -= ft_strlen(t);
-			//printf("ft_wtoc_strndup len %d\n", len);
-			if (len < 0)
+			utf_str = utf_char_unicode(*symb++);
+			nbr -= ft_strlen(utf_str);
+			//printf("utf_char_len_concat nbr %d\n", nbr);
+			if (nbr < 0)
 				break ;
-			s = ft_strcat(s, t);
-			if (t)
-				free(t);
+			str = ft_strcat(str, utf_str);
+			if (utf_str)
+				free(utf_str);
 		}
 	}
 	else
-		s = NULL;
-	return (s);
+		str = NULL;
+	return (str);
 }
 
 /*
-** Finds the num of bits of w, then calls ft_wtoc_strndup on that size
+** Finds the num of bits of c, then calls utf_char_len_concat on that size
 */
 
-static char	*ft_wtoc_strdup(wchar_t *w)
+static char		*utf_char_find_len_concat(wchar_t *c)
 {
-	wchar_t	*t;
+	wchar_t	*symb;
 	size_t	len;
+	char 	*str;
 
 	len = 0;
-	t = w;
-	if (t)
-		while (*t++)
+	symb = c;
+	if (symb)
+		while (*symb++)
 			len += sizeof(wchar_t);
-		//printf("ft_wtoc_strdup %zu\n", len);
-	return (ft_wtoc_strndup(w, len));
+		//printf("utf_char_find_len_concat %zu\n", len);
+	str = utf_char_len_concat(c, len);
+	return (str);
 }
 
-/*size_t		str_print(va_list arg, t_bone *elem)
-{
-	char *c;
-	char	*s;
-	size_t len;
-
-	len = 0;
-
-		if (elem->mod_l != NULL && !ft_strcmp(elem->mod_l, "l"))
-		{
-			s = ft_wtoc_strdup(va_arg(arg, wchar_t*));
-			len = ft_strlen(s);
-			print_str_ln(s, len);
-			//printf("XDDDDDDDDDD %s len %d\n", s, len);
-		}
-		else
-		{
-			c = va_arg(arg, char *);
-			while (*c != '\0')
-			{
-				write(1, &(*c), 1);
-				len++;
-				c++;
-			}
-		}
-	free(s);
-	return (len);
-}*/
-
-static intmax_t		cast_signed_size_t(intmax_t num)
+intmax_t		cast_signed_size_t(intmax_t num)
 {
 	if (sizeof(size_t) == sizeof(short))
 		return ((short)num);
@@ -454,7 +425,7 @@ static intmax_t		cast_signed_size_t(intmax_t num)
 		return (num);
 }
 
-static intmax_t		intmax_cast(uintmax_t nbr, t_bone *elem)
+intmax_t		intmax_cast(uintmax_t nbr, t_bone *elem)
 {
 	if (elem->mod_l != -1)
 	{
@@ -474,7 +445,7 @@ static intmax_t		intmax_cast(uintmax_t nbr, t_bone *elem)
 	return ((int)nbr);
 }
 
-static uintmax_t		uintmax_cast(uintmax_t nbr, t_bone *elem)
+uintmax_t		uintmax_cast(uintmax_t nbr, t_bone *elem)
 {
 	if (elem->mod_l != -1)
 	{
@@ -500,11 +471,11 @@ static uintmax_t		uintmax_cast(uintmax_t nbr, t_bone *elem)
 char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 {
 	uintmax_t 	big;
-	int 	tmpbig;
-	char 	*itoa;
-	char 	*str;
-	int 	len;
-	int 	i;
+	int			tmpbig;
+	char		*itoa;
+	char		*str;
+	int			len;
+	int			i;
 	//printf("itoa_base\n");
 	//printf("bighigh %zu elem->precis %d\n", bighigh, elem->precis);
 
@@ -525,6 +496,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	//printf("elem %zu", (len > elem->precis) ? len : elem->precis);
 	len = (len > elem->precis) ? len : elem->precis;
 	//len = (elem->type && ft_strchr("fF", elem->type)) ? 1 : len;
+	//printf("len %d\n", len);
 	if (!(itoa = (char *)malloc(sizeof(itoa) * (len + 1))))
 		return (NULL);	
 	*(itoa + len) = 0;
@@ -539,7 +511,7 @@ char 	*itoa_base(t_bone *elem, uintmax_t bighigh)
 	// *(itoa + i) = 0;
 	//if (elem->prefix)
 	//	*(itoa + len) = '-';
-	//printf("itoa %s\n", itoa);
+	//printf("itoa end %s\n", itoa);
 	return (itoa);
 }
 
@@ -654,7 +626,7 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 }
 
 
-static	char	*ft_join_float(char *str1, char *str2)
+char	*str_join_float(char *str1, char *str2)
 {
 	char 	*str3;
 
@@ -668,36 +640,6 @@ static	char	*ft_join_float(char *str1, char *str2)
 	free(str1);
 	free(str2);
 	return (str3);
-}
-
-char 	*gather_mantissa(t_bone *elem, long double nbr)
-{
-	long double 	val;
-	uintmax_t 		i;
-	int 	tmp;
-	//int 	base;
-	char 	*str;
-
-	tmp = elem->precis;
-	elem->precis = 0;//itoa base
-	val = 1;
-	while (val < nbr / elem->base)
-		val *= elem->base;
-	//printf("val %Lf nbr %Lf\n", val, nbr);
-	str = ft_memalloc(sizeof(str));
-	while (val >= 1)
-	{
-		i = (uintmax_t)(nbr / val);
-		//printf("i %ju\n", i);
-		str = ft_join_float(str, itoa_base(elem, i));
-		nbr -= i * val;			
-		val /= elem->base;
-	}
-	//printf("str %s\n", str);
-	elem->precis = tmp;
-	if (elem->precis > 0) 
-		str = ft_join_float(str, ft_strdup("."));
-	return (str);
 }
 
 
@@ -720,13 +662,13 @@ long double 	nbr_power(long double elmbase, long double power)
 	return (num);
 }
 
-long double 	traverse(long double elmbase, long double nbr)
+long double 	fix_droby_float(long double elmbase, long double nbr)
 {
 	long double		u;
 	uintmax_t 		i;
 
 	u = 1;
-	//printf("traverse %.20Lf\n", nbr);
+	//printf("fix_droby_float %.20Lf\n", nbr);
 	while (u < nbr / nbr_power(elmbase, 7))
 	{
 		u *= nbr_power(elmbase, 7);
@@ -746,7 +688,7 @@ long double 	traverse(long double elmbase, long double nbr)
 			//printf("nbr %Lf u %Lf\n", nbr, u);
 		u /= nbr_power(elmbase, 7);
 	}
-	//printf("traverse nbr end  u %.20Lf nbr %.20Lf\n", u, nbr);	
+	//printf("fix_droby_float nbr end  u %.20Lf nbr %.20Lf\n", u, nbr);	
 	return (nbr);
 }
 
@@ -760,29 +702,31 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 	i = elem->precis;
 	if (elem->precis != -1)
 	{
-		m = traverse(elem->base, nbr);
+		m = fix_droby_float(elem->base, nbr);
 		c = nbr - m;
 		//printf(" fix_droby nbr %.20Lf m %.20Lf c %.20Lf\n", nbr, m, c);
 		while (i-- > 0)
-		{			
+		{	
+			//printf("first i %d\n", i);		
 			m *= elem->base;
 			//printf("m %.20Lf\n", m);
 		}
 		//printf(" fix_droby m %.20Lf\n", m);
-		if (traverse(elem->base, m) < .5)
+		if (fix_droby_float(elem->base, m) < .5)
 		{
 			//printf("yep < .5 \n");
-			m -= traverse(elem->base, m);
+			m -= fix_droby_float(elem->base, m);
 			m += .1;
 			//printf("yep m %Lf\n", m);
 		}
-		else if (traverse(elem->base, m) >= .5)
+		else if (fix_droby_float(elem->base, m) >= .5)
 		{
 			//printf("yep >= .5 m %.20Lf\n", m);
-			m -= traverse(elem->base, m);
+			m -= fix_droby_float(elem->base, m);
 			m += 1.1;
 			//printf("yep m %Lf\n", m);			
 		}
+		//printf("i %d\n", i);
 		while (++i < elem->precis)
 			m /= elem->base;
 		//printf("fix_droby c %.20Lf m %.20Lf c+m %.20Lf\n", c, m, c + m );
@@ -792,7 +736,70 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 	return (nbr);
 }
 
-long double 	gather_float(t_bone *elem, long double droby)
+char 	*build_mantissa(t_bone *elem, long double nbr)
+{
+	long double 	val;
+	//long double 	temp_val;
+	uintmax_t 		i;
+	int 	tmp;
+	//int 	base;
+	char 	*str;
+	int 	j;
+
+	//i = j;
+	tmp = elem->precis;
+	//elem->precis = 0;//itoa base
+	val = 1;
+	str = ft_memalloc(sizeof(str));
+	/*temp_val = fix_droby(elem, nbr);
+	printf("temp_val %Lf\n", temp_val);	
+	if ((uintmax_t)(nbr / val) == 0)
+	{
+		while (val >= 1)
+		{
+			i = (uintmax_t)(nbr / val);
+			if (i == 0)
+				i = 1;
+			//printf("mantissa i %ju\n", i);
+			str = str_join_float(str, itoa_base(elem, i));
+			nbr -= i * val;			
+			val /= elem->base;
+		}
+		return (str);
+	}*/
+
+	elem->precis = 0;//itoa base
+	while (val < nbr / elem->base)
+	{
+		val *= elem->base;
+		//printf("val %.100Lf\n", val);
+	}
+	
+	//str = ft_memalloc(sizeof(str));
+	//printf("val %.40Lf\n", val / 1);
+
+	while (val >= 1)
+	{
+		//printf("val %Lf nbr %Lf value %ju\n", val, nbr, (uintmax_t)(nbr / val));
+		i = (uintmax_t)(nbr / val);
+		//printf("mantissa i %ju\n", i);
+		str = str_join_float(str, itoa_base(elem, i));
+		//if (i != 1)
+		//	i = 1;
+		nbr -= i * val;			
+		val /= elem->base;
+	}
+	//printf("str %s\n", str);
+	elem->precis = tmp;
+	if (elem->precis > 0) 
+		str = str_join_float(str, ft_strdup("."));
+	//printf("uintmax_t %ju\n", UINTMAX_MAX);
+	return (str);
+}
+
+
+
+long double 	build_float(t_bone *elem, long double droby)
 {
 	long double 	val;
 	long double 	nbr;
@@ -807,7 +814,7 @@ long double 	gather_float(t_bone *elem, long double droby)
 	while (nbr >= 1)
 	{
 		i = (uintmax_t)(nbr / val);
-		//printf("i %zu nbr %Lf\n\n", i, nbr);
+		//printf("i %zu nbr %.20Lf\n\n", i, nbr);
 		if (i == 0)
 			return (nbr);
 		nbr -= i * val;
@@ -819,7 +826,7 @@ long double 	gather_float(t_bone *elem, long double droby)
 	return (nbr);
 }
 
-char 	*build_float_str(t_bone *elem, long double nbr)
+char 	*build_float_join_str(t_bone *elem, long double nbr)
 {
 	int 	i;
 	int 	j;
@@ -834,9 +841,9 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 	//printf("nbr %Lf\n", nbr);
 	while (j > 0 || (j < 0 && nbr))
 	{
-		//printf("build_float_str nbr %.16Lf\n", nbr);
+		//printf("build_float_join_str nbr %.16Lf\n", nbr);
 		i = nbr * elem->base;
-			//printf("build_float_str nbr %Lf i %d elem->precis\n", nbr, i);
+			//printf("build_float_join_str nbr %.40Lf i %d elem->precis\n", nbr, i);
 		if (j == 1 && nbr >= .55 && !elem->g_mode)
 			i++;
 		/*if (j == 1 && nbr <= 0.1 && elem->g_mode == 1)
@@ -844,7 +851,17 @@ char 	*build_float_str(t_bone *elem, long double nbr)
 			printf("YEP\n");
 			elem->g_mode_on = 1;		
 		}*/
-		str = ft_join_float(str, itoa_base(elem, i));			
+		if (i != -2147483648)
+		{
+			//printf("onr\n");
+			str = str_join_float(str, itoa_base(elem, i));
+		}
+		else
+		{
+			//printf("yeop\n");
+			elem->precis = j;
+			return (str_join_float(str, itoa_base(elem, nbr)));	
+		}
 		nbr *= elem->base;
 		nbr -= i;
 		j--;
@@ -931,12 +948,13 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 	{		
 		//if (gG)
 		//printf("nbr %Lf\n", nbr);
-		str = gather_mantissa(elem, nbr);
+		str = build_mantissa(elem, nbr);
 			//printf("print_float_nb %s\n", str);
-		nbr = gather_float(elem, nbr);
+		nbr = build_float(elem, nbr);
 		//nbr = (elem->precis >= .5) ? nbr + .000001 : nbr;
 			//printf("print_float_nb  nbr%Lf\n", nbr);
-		str = ft_join_float(str, build_float_str(elem, nbr));
+		str = str_join_float(str, build_float_join_str(elem, nbr));
+		//printf("print_float_nb %s\n", str);
 		if (elem->g_mode == 1)
 			str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
 	}
@@ -960,26 +978,26 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 			}
 		}
 		//printf("nbr %.20Lf l %.20Lf tick %d\n", nbr, l, tick);
-		str = gather_mantissa(elem, nbr / l);
+		str = build_mantissa(elem, nbr / l);
 		//printf("print_float_nb mant %s\n", str);
-		nbr = gather_float(elem, nbr / l);
+		nbr = build_float(elem, nbr / l);
 		//printf("print_float_nb  nbr%Lf\n", nbr);
 
 		//if (tick == 0 && nmbase == 2)
 		//	str = str;
 		if (elem->precis == -1 && (tick != 0 && nmbase == 2 && nbr > 0))
-			str = ft_join_float(str, ft_strdup("."));
+			str = str_join_float(str, ft_strdup("."));
 
-		str = ft_join_float(str, build_float_str(elem, nbr));
+		str = str_join_float(str, build_float_join_str(elem, nbr));
 		//printf("print_float_nb %s\n", str);
 		//if (elem->g_mode == 1)
 		//	str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
-		str = ft_join_float(str, (nmbase != 2) ? ft_strdup("e") : ft_strdup("p"));
-		str = ft_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("+") : ft_strdup("-")));
+		str = str_join_float(str, (nmbase != 2) ? ft_strdup("e") : ft_strdup("p"));
+		str = str_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("+") : ft_strdup("-")));
 		if (tick < 10 && nmbase != 2)
-			str = ft_join_float(str,  ft_strdup("0"));
+			str = str_join_float(str,  ft_strdup("0"));
 		elem->base = 10;//16 change to 10 on  aA
-		str = ft_join_float(str, itoa_base(elem, tick));
+		str = str_join_float(str, itoa_base(elem, tick));
 	//elem->xx  itoa_base(elem, bighigh);
 		(elem->xx == 1) ? xx_upper(str) : str;
 		
@@ -1060,7 +1078,7 @@ char 	*print_char(va_list arg, t_bone *elem)
 	if (elem->mod_l != -1 && elem->mod_l == 2 && MB_CUR_MAX > 1)//l
 	{
 		//printf("!ft_strcmp(elem->mod_l\n");
-		str = ft_wctos((wchar_t)va_arg(arg, wint_t));
+		str = utf_char_unicode((wchar_t)va_arg(arg, wint_t));
 	}
 	else
 	{
@@ -1088,9 +1106,9 @@ char 	*print_str_char(va_list arg, t_bone *elem)
 	if (elem->mod_l != -1 && elem->mod_l == 2)
 	{
 		if (elem->precis >= 0)
-			str = ft_wtoc_strndup(va_arg(arg, wchar_t*), (size_t)elem->precis);
+			str = utf_char_len_concat(va_arg(arg, wchar_t*), (size_t)elem->precis);
 		else
-			str = ft_wtoc_strdup(va_arg(arg, wchar_t*));
+			str = utf_char_find_len_concat(va_arg(arg, wchar_t*));
 	}
 	else
 	{
@@ -1506,7 +1524,7 @@ int 	ft_printf(const char *format, ...)
 	return (tick);
 }
 
-/*int 		main(void)
+int 		main(void)
 {
 	int i, j;
 	i = 0;
@@ -1608,10 +1626,19 @@ int 	ft_printf(const char *format, ...)
 	ft_printf("some text %n\n", &z);
 	printf("z %d\n", z);
 
-	ft_printf("%f\n", 14445654446466465424242.242);
+	//ft_printf("%f\n", 1444565.4576242);
 
-	ft_printf("{%05.s}", 0);
+	ft_printf("%.20f\n", -14445654446466463464367436437634734774574574574587458450901241252352372355424242.2456756769769792);
+	printf("%.20f\n", -14445654446466463464367436437634734774574574574587458450901241252352372355424242.2456756769769792);
+
+	//ft_printf("%.20f\n", -346340.14445654446466463464367436437634734774574574574587458450901241252352372355424242);
+	//printf("%.20f\n", -346340.14445654446466463464367436437634734774574574574587458450901241252352372355424242);
+	//ft_printf("%.20f\n", 34.457457);
+	//printf("%.20f\n", 34.457457);
+
+
+	ft_printf("{%05.s}\n", 0);
 
 	return (0);
-}*/
+}
 
