@@ -614,7 +614,11 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 	//if (bighigh > 0)		
 	//printf("elem->precis %d\n", elem->precis);
 	if ((bighigh == 0 && (!ft_strchr("poO", elem->type) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis))) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis > 0))
+	{
+		if (elem->hex)
+			free(elem->hex);
 		elem->hex = NULL;
+	}	
 	str = itoa_base(elem, bighigh);
 	len = ft_strlen(str);// + (elem->flag != 0 ? 1 : 0);	//count str length to output
 	//printf("print_atoi_nbr len %zu\n", len);
@@ -922,7 +926,7 @@ void		xx_upper(char *str)
 	return (str);
 }
 */
-char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
+char		*build_float_str(t_bone *elem, long double nbr, char *str)
 {
 	/*size_t 	len;
 	long double nbr;
@@ -938,10 +942,10 @@ char		*print_float_nbr(t_bone *elem, long double nbr, char *str)
 	elem->flag = (nbr < 0) ? '-' : elem->flag;
 	nbr = (nbr < 0) ? -nbr : nbr;
 	elem->precis = (elem->precis == -1) ? 6 : elem->precis;*/
-	int  tick;
-	int  nmbase;
-	long double l;
-	long double tmp_nbr;
+	int				tick;
+	int				nmbase;
+	long double		l;
+	long double		tmp_nbr;
 
 	tick = 0;
 	l = 1;
@@ -1034,6 +1038,7 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 	else
 		nbr = va_arg(arg, double);
 	//printf("elem->mod_l %s\n", elem->mod_l);
+	//printf("nbr %Lf\n", nbr);
 	elem->flag = (nbr < 0) ? '-' : elem->flag;
 	//printf("nbr %.20Lf\n", nbr);
 	nbr = (nbr < 0) ? -nbr : nbr;
@@ -1049,11 +1054,11 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 		else
 			elem->type -= 1;
 		elem->g_mode = 1;		
-		str = print_float_nbr(elem, nbr, str);
+		str = build_float_str(elem, nbr, str);
 		//str = ft_chrrepl_trailing(ft_chrrepl_trailing(str, '0', 0), '.', 0);
 	}
 	else*/
-	str = print_float_nbr(elem, nbr, str);
+	str = build_float_str(elem, nbr, str);
 
 	//printf("Str %s\n", str);
 	len = ft_strlen(str);
@@ -1068,14 +1073,14 @@ size_t		print_floate_nbr(va_list arg, t_bone *elem)
 
 
 
-char 	*print_char(va_list arg, t_bone *elem)
+char 	*build_char(va_list arg, t_bone *elem)
 {
 	//int 		len;
 	char 		*str;
 
 	//len = 0;
 	str = NULL;
-	//printf("print_char %s\n", elem->mod_l);
+	//printf("build_char %s\n", elem->mod_l);
 	//printf("arg %d\n", va_arg(arg, wint_t));
 	
 	if (elem->mod_l != -1 && elem->mod_l == 2 && MB_CUR_MAX > 1)//l
@@ -1140,8 +1145,8 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 	//printf("STR%s elem->padding%d elem->width %d elem->flag %d elem->left %d\n", str, elem->padding, elem->width, elem->flag, elem->left);
 	if (elem->type && ft_strchr("cC", elem->type))
 	{
-		//len = print_char(arg, elem);
-		str = print_char(arg, elem);
+		//len = build_char(arg, elem);
+		str = build_char(arg, elem);
 		len += ((ft_strlen(str) == 0) ? 0 : ft_strlen(str));
 		clen = len;
 		if (clen == 0 && !elem->left)
@@ -1149,6 +1154,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 		len += ft_strlen(str) > 0 ? print_flags(str, elem, len) : ft_char(str);
 		if (clen == 0 && elem->left == 1)			
 			len += prf_nbr_putchar(elem->padding, elem->width - 1);
+		free(str);
 		//len += print_flags(str, elem, len); //`MALLOC error
 	}
 	else if (elem->type && ft_strchr("sS", elem->type))
@@ -1202,6 +1208,7 @@ size_t 		parse_arg(va_list arg, t_bone *elem, size_t ln)
 			len += print_flags(str, elem, 1);
 		if (*str == 10 || *str == 0)
 			len = 0;
+		free(str);
 		//printf("parse_arg str %d len %zu str %zu\n", *str, len, ft_strlen(str));
 		//printf("parse_arg len %zu str %zu\n", len, ft_strlen(str));		
 		
@@ -1233,7 +1240,11 @@ void	fillflag(const char **f, t_bone *elem)
 		else if (**f == '0')
 			elem->padding = (elem->left == 0 ? '0' : elem->padding);
 		else if (**f == '#')
+		{
+			if (elem->hex)
+				free(elem->hex);
 			elem->hex = ft_strdup("#");	
+		}
 		//else
 		//	break ;	
 		(*f)++;
@@ -1423,7 +1434,7 @@ void			fillhex(const char **format, t_bone *elem)
 	{
 		if (elem->hex)
 			free(elem->hex);
-		elem->hex = NULL;
+		//elem->hex = NULL;
 		if (**format && ft_strchr("oO", **format))
 			elem->hex = ft_strdup("0");
 		else if (**format && ft_strchr("pxa", **format))
@@ -1649,6 +1660,9 @@ int 	ft_printf(const char *format, ...)
 
 
 	ft_printf("{%05.s}\n", 0);
+
+		ft_printf("%La\n", 9.0456L);
+	printf("%La\n", 9.0456L);
 
 	//ft_printf("%b\n", 1);
 	//ft_printf("%b\n", 2);
