@@ -613,7 +613,7 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 	//printf("print_atoi_nbr elem->mod_l %d\n", elem->mod_l);
 	//if (bighigh > 0)		
 	//printf("elem->precis %d\n", elem->precis);
-	if ((bighigh == 0 && elem->type && (!ft_strchr("poO", elem->type) || (elem->hex && !ft_strchr("oO", elem->type) && elem->precis))) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis > 0))
+	if ((bighigh == 0 && elem->type && (!ft_strchr("poO", elem->type) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis))) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis > 0))
 	{
 		if (elem->hex)
 			free(elem->hex);
