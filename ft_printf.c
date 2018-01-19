@@ -604,7 +604,7 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 
 	//printf("!!!!!!!!!!!!!!bighigh %zu\n", bighigh);
 
-	if (bighigh == 0 && ft_strchr("oO", elem->type))
+	if (bighigh == 0 && (elem->type && ft_strchr("oO", elem->type)))
 	{
 		if (elem->hex)
 			free(elem->hex);
@@ -613,13 +613,13 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 	//printf("print_atoi_nbr elem->mod_l %d\n", elem->mod_l);
 	//if (bighigh > 0)		
 	//printf("elem->precis %d\n", elem->precis);
-	if ((bighigh == 0 && (!ft_strchr("poO", elem->type) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis))) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis > 0))
+	if ((bighigh == 0 && elem->type && (!ft_strchr("poO", elem->type) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis))) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis > 0))
 	{
 		if (elem->hex)
 			free(elem->hex);
 		elem->hex = NULL;
 	}	
-	if (bighigh == 0 && elem->precis == 0)
+	if ((bighigh == 0 && elem->precis == 0 && elem->width == 0) && (elem->type && !ft_strchr("poO", elem->type)))
 		return (len);
 	else
 	{
@@ -828,13 +828,10 @@ long double 	build_float(t_bone *elem, long double droby)
 	while (nbr >= 1)
 	{
 		i = (uintmax_t)(nbr / val);
-<<<<<<< HEAD
 		//printf("i %zu nbr %Lf\n\n", i, nbr);
-=======
 		//printf("i %zu nbr %.20Lf\n\n", i, nbr);
 		if (i == 0)
 			return (nbr);
->>>>>>> 82763f67ab6de34ed8b937de1f361f0fd0ad4cf9
 		nbr -= i * val;
 		if (i == 0)
 			return (i);
