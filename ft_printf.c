@@ -604,16 +604,16 @@ size_t		print_atoi_nbr(va_list arg, t_bone *elem)
 
 	//printf("!!!!!!!!!!!!!!bighigh %zu\n", bighigh);
 
-	if (bighigh == 0 && (elem->type && ft_strchr("oO", elem->type)))
+	/*if (bighigh == 0 && (elem->type && ft_strchr("oO", elem->type)))
 	{
 		if (elem->hex)
 			free(elem->hex);
 		elem->hex = NULL;
-	}
+	}*/
 	//printf("print_atoi_nbr elem->mod_l %d\n", elem->mod_l);
 	//if (bighigh > 0)		
 	//printf("elem->precis %d\n", elem->precis);
-	if ((bighigh == 0 && elem->type && (!ft_strchr("poO", elem->type) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis))) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis > 0))
+	if ((bighigh == 0 && elem->type && (!ft_strchr("poO", elem->type) || (elem->hex && !ft_strchr("oO", elem->type) && elem->precis))) || (elem->hex && ft_strchr("oO", elem->type) && elem->precis > 0))
 	{
 		if (elem->hex)
 			free(elem->hex);
@@ -1560,6 +1560,7 @@ int 	ft_printf(const char *format, ...)
 /*int 		main(void)
 {
 	int i, j;
+	char c;
 	i = 0;
 	j = 0;
 		ft_printf("rx %#llx\n", 9223372036854775807);
@@ -1689,6 +1690,9 @@ int 	ft_printf(const char *format, ...)
 	printf("%e\n", 9.00);
 
 	ft_printf("dd %d\n", 0);
+
+
+	ft_printf("%s%d%p%%%S%D%i%o%O%u%U%x%X%c%C","bonjour", 42, &c, L"暖炉", LONG_MAX, 42, 42, 42, 100000, ULONG_MAX, 42, 42, 'c', L'플');
 	//ft_printf("%b\n", 1);
 	//ft_printf("%b\n", 2);
 	//ft_printf("%b\n", 3);
@@ -1701,5 +1705,5 @@ int 	ft_printf(const char *format, ...)
 	//ft_printf("%#b\n", 128);
 
 	return (0);
-}*/
-
+}
+*/
