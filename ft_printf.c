@@ -808,9 +808,9 @@ long double 	gather_float(t_bone *elem, long double droby)
 	{
 		i = (uintmax_t)(nbr / val);
 		//printf("i %zu nbr %Lf\n\n", i, nbr);
-		if (i == 0)
-			return (nbr);
 		nbr -= i * val;
+		if (i == 0)
+			return (i);
 		//printf("nbr %.20Lf\n", nbr);
 
 		val /= 1;
