@@ -1572,7 +1572,7 @@ int 	ft_printf(const char *format, ...)
 	return (tick);
 }
 
-int 		main(void)
+/*int 		main(void)
 {
 	int i, j;
 	char c;
@@ -1725,5 +1725,5 @@ int 		main(void)
 	//ft_printf("%#b\n", 128);
 
 	return (0);
-}
+}*/
 
