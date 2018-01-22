@@ -22,6 +22,8 @@ char	*ft_strncpy(char *dst, const char *src, size_t len)
 		*mas++ = *src++;
 		--len;
 	}
+	if (len == 0)
+		len++;
 	while (len > 0)
 	{
 		*mas++ = '\0';

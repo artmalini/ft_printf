@@ -1,33 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memcpy.c                                        :+:      :+:    :+:   */
+/*   ft_strlendup.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakhiny <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/10/25 18:15:22 by amakhiny          #+#    #+#             */
-/*   Updated: 2017/10/25 18:15:26 by amakhiny         ###   ########.fr       */
+/*   Created: 2018/01/22 11:48:00 by amakhiny          #+#    #+#             */
+/*   Updated: 2018/01/22 11:48:05 by amakhiny         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "ft_printf.h"
 
-void	*ft_memcpy(void *dst, const void *src, size_t n)
+char	*ft_strlendup(const char *str1, int len)
 {
-	size_t				i;
-	unsigned char		*mas;
-	const unsigned char	*source;
+	char	*str;
 
-	i = 0;
-	mas = (unsigned char *)dst;
-	source = (unsigned char *)src;
-	if (mas != src || n != 0)
+	if (str1)
 	{
-		while (i < n)
-		{
-			mas[i] = source[i];
-			i++;
-		}
+		if (!(str = (char *)malloc(sizeof(str) * (len + 1))))
+			return (NULL);
+		if (str)
+			str = ft_strncpy(str, str1, len);
 	}
-	return (dst);
+	else
+		str = NULL;
+	return (str);
 }

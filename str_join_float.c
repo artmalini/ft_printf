@@ -1,33 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memcpy.c                                        :+:      :+:    :+:   */
+/*   str_join_float.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amakhiny <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/10/25 18:15:22 by amakhiny          #+#    #+#             */
-/*   Updated: 2017/10/25 18:15:26 by amakhiny         ###   ########.fr       */
+/*   Created: 2018/01/22 11:41:19 by amakhiny          #+#    #+#             */
+/*   Updated: 2018/01/22 11:43:24 by amakhiny         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "ft_printf.h"
 
-void	*ft_memcpy(void *dst, const void *src, size_t n)
+char	*str_join_float(char *str1, char *str2)
 {
-	size_t				i;
-	unsigned char		*mas;
-	const unsigned char	*source;
+	char	*str3;
+	int		len1;
+	int		len2;
 
-	i = 0;
-	mas = (unsigned char *)dst;
-	source = (unsigned char *)src;
-	if (mas != src || n != 0)
-	{
-		while (i < n)
-		{
-			mas[i] = source[i];
-			i++;
-		}
-	}
-	return (dst);
+	if (!str1 || !str2)
+		return (NULL);
+	len1 = ft_strlen(str1);
+	len2 = ft_strlen(str2);
+	if (!(str3 = (char *)malloc(sizeof(str3) * ((len1 + len2 )+ 1))))
+		return (NULL);
+	*str3 = 0;
+	str3 = ft_strcat(ft_strcat(str3, str1), str2);
+	free(str1);
+	free(str2);
+	return (str3);
 }

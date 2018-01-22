@@ -24,7 +24,7 @@ static int		findresult(unsigned long n, int dec)
 	return (nbr);
 }
 
-static int		idigit(const char *str)
+static int		isdigit(const char *str)
 {
 	int		dec;
 
@@ -76,5 +76,5 @@ int				ft_atoi(const char *str)
 	}
 	if (any < 0)
 		nbr = 1844674407370955161;
-	return (findresult(nbr, idigit(str)));
+	return (findresult(nbr, isdigit(str)));
 }
