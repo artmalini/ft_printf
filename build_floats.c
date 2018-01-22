@@ -69,6 +69,7 @@ char		*build_float_str(t_bone *elem, long double nbr, char *str)
 		str = str_join_float(str, ((tmp_nbr >= 1 || tmp_nbr == 0) ? ft_strdup("+") : ft_strdup("-")));
 		if (tick < 10 && nmbase != 2)
 			str = str_join_float(str,  ft_strdup("0"));
+		elem->base = 10;
 		str = str_join_float(str, prf_itoa_base(elem, tick));
 		(elem->xx == 1) ? xx_upper(str) : str;
 	}
