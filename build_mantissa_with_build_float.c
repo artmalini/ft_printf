@@ -61,14 +61,14 @@ long double		fix_droby(t_bone *elem, long double nbr, int i)
 		if (fix_droby_float(elem->base, first) < .5)
 		{
 			first -= fix_droby_float(elem->base, first);
-			if (!ft_strchr("eE", elem->type))
+			//if (!ft_strchr("eE", elem->type))
 				first += .1;
 		}
 		else if (fix_droby_float(elem->base, first) >= .5)
 		{
 			first -= fix_droby_float(elem->base, first);
 			//printf("first %Lf\n", first);
-			if (!ft_strchr("eE", elem->type))
+			//if (!ft_strchr("eE", elem->type))
 				first += 1.1;
 			//printf("first %Lf\n", first);
 		}

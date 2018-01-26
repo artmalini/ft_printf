@@ -184,6 +184,7 @@ int 		main(void)
 
 	ft_printf("|   -5.e-01|%#10.e|\n", -0.5);
 	ft_printf("|-1.E+03   |%+-#10.E|\n", -1024.05);
+	ft_printf("|4.23E+01|%E\n", 42.42);
 	/*ft_printf("1|| |%.0hhu|\n", 1024);
 	ft_printf("2| 1024|% .0d|\n", 1024);
 
