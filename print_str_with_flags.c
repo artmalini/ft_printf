@@ -13,37 +13,40 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-int		if_flag(t_bone *elem, int str_len)
+int		if_flag(t_bone *elem, int nb)
 {
 	int		len;
 
-	len = str_len;
+	len = nb;
 	if (elem->flag)
 		len++;
 	return (len);
 }
 
-int		print_str_with_flags(char *str, t_bone *elem, int str_len)
+int		print_str_with_flags(char *str, t_bone *elem, int nb)
 {
 	int		len;
 
 	len = 0;
-	str_len = (elem->hex != 0) ? str_len + ft_strlen(elem->hex) : str_len;
+	nb = (elem->hex) ? nb + ft_strlen(elem->hex) : nb;
 	if (elem->padding == '0')
 	{
-		len = (elem->flag ? prf_putchar(elem->flag) : 0);
+		len = elem->flag ? prf_putchar(elem->flag) : 0;
 		len += (elem->hex ? prf_putstr(elem->hex) : 0);
 	}
 	if (!elem->left)
-		len += prf_nbr_putchar(elem->padding, elem->width - if_flag(elem, str_len));
+		len += prf_nbr_putchar(elem->padding, elem->width - if_flag(elem, nb));
 	if (elem->padding == ' ')
 	{
 		len += elem->flag ? prf_putchar(elem->flag) : 0;
-		len += (elem->hex) ? prf_putstr(elem->hex) : 0;
+		len += elem->hex ? prf_putstr(elem->hex) : 0;
 	}
-	prf_print_str_ln(str, ft_strlen(str));
+	if (!ft_strcmp("(null)", str))
+		prf_print_str_ln(str, elem->precis != -1 ? ft_strlen(str) - elem->precis : ft_strlen(str));
+	else
+		prf_print_str_ln(str, ft_strlen(str));
 	if (elem->left)
-		len += prf_nbr_putchar(elem->padding, elem->width - if_flag(elem, str_len));
+		len += prf_nbr_putchar(elem->padding, elem->width - if_flag(elem, nb));
 	free(str);
 	return (len);
 }

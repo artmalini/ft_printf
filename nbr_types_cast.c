@@ -43,7 +43,7 @@ intmax_t		intmax_cast(uintmax_t nbr, t_bone *elem)
 			return (nbr);
 		else if (elem->mod_l == 6)
 			return (nbr_z(nbr));
-	}	
+	}
 	return ((int)nbr);
 }
 
@@ -63,7 +63,7 @@ uintmax_t		uintmax_cast(uintmax_t nbr, t_bone *elem)
 			return (nbr);
 		else if (elem->mod_l == 6)
 			return ((size_t)nbr);
-	}	
+	}
 	else if (elem->type == 'p')
 		return (nbr);
 	return ((unsigned int)nbr);

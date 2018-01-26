@@ -23,7 +23,7 @@ char	*str_join_float(char *str1, char *str2)
 		return (NULL);
 	len1 = ft_strlen(str1);
 	len2 = ft_strlen(str2);
-	if (!(str3 = (char *)malloc(sizeof(str3) * ((len1 + len2 )+ 1))))
+	if (!(str3 = (char *)malloc(sizeof(str3) * ((len1 + len2) + 1))))
 		return (NULL);
 	*str3 = 0;
 	str3 = ft_strcat(ft_strcat(str3, str1), str2);

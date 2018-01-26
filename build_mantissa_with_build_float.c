@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-long double 	nbr_power(long double elmbase, long double power)
+long double		nbr_power(long double elmbase, long double power)
 {
 	long double i;
 	long double num;
@@ -29,10 +29,10 @@ long double 	nbr_power(long double elmbase, long double power)
 	return (num);
 }
 
-long double 	fix_droby_float(long double elmbase, long double nbr)
+long double		fix_droby_float(long double elmbase, long double nbr)
 {
 	long double		u;
-	uintmax_t 		i;
+	uintmax_t		i;
 
 	u = 1;
 	while (u < nbr / nbr_power(elmbase, 7))
@@ -46,11 +46,10 @@ long double 	fix_droby_float(long double elmbase, long double nbr)
 	return (nbr);
 }
 
-long double 	fix_droby(t_bone *elem, long double nbr)
+long double		fix_droby(t_bone *elem, long double nbr, int i)
 {
 	long double		prefix;
 	long double		first;
-	int				i;
 
 	i = elem->precis;
 	if (elem->precis != -1)
@@ -76,8 +75,6 @@ long double 	fix_droby(t_bone *elem, long double nbr)
 	return (nbr);
 }
 
-
-
 long double		build_float(t_bone *elem, long double droby)
 {
 	long double		val;
@@ -85,7 +82,7 @@ long double		build_float(t_bone *elem, long double droby)
 	uintmax_t		i;
 
 	val = 1;
-	nbr = fix_droby(elem, droby);
+	nbr = fix_droby(elem, droby, 0);
 	while (nbr >= 1)
 	{
 		i = (uintmax_t)(nbr / val);
@@ -114,13 +111,21 @@ char			*build_mantissa(t_bone *elem, long double nbr)
 		val *= elem->base;
 	while (val >= 1)
 	{
+		printf("nbr nbr %Lf\n", nbr);
 		i = (uintmax_t)(nbr / val);
+		printf("yep i %ju\n", i);
+		if (i == 9223372036854775808U)
+		{
+			//printf("yep\n");
+			free(str);
+			return (NULL);
+		}
 		str = str_join_float(str, prf_itoa_base(elem, i));
-		nbr -= i * val;			
+		nbr -= i * val;
 		val /= elem->base;
 	}
 	elem->precis = tmp;
-	if (elem->precis > 0) 
+	if (elem->precis > 0)
 		str = str_join_float(str, ft_strdup("."));
 	return (str);
 }

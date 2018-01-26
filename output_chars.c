@@ -31,9 +31,9 @@ int		prf_putchar(char c)
 
 int		prf_nbr_putchar(char c, int nbr)
 {
-	int	 len;
+	int		len;
 
-	len = 0;
+	len = 0;	
 	while (nbr > 0)
 	{
 		write(1, &c, 1);
@@ -45,7 +45,7 @@ int		prf_nbr_putchar(char c, int nbr)
 
 int		prf_putstr(char *str)
 {
-	int 	len;
+	int		len;
 
 	len = 0;
 	if (str)

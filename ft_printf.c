@@ -23,8 +23,12 @@ void	struct_init(t_bone *elem)
 	elem->flag = 0;
 	elem->base = 10;
 	elem->width = 0;
+	elem->minus = -1;
 	elem->precis = -1;
+	elem->precisz = -1;
 	elem->prefix = 0;
+	elem->hash = 0;
+	elem->pls = 0;
 	elem->xx = 0;
 }
 
@@ -44,7 +48,7 @@ int		parse_str_printf(const char *format, va_list arg, t_bone *elem, int len)
 	int			tick;
 	const char	*e;
 
-	tick = 0;	
+	tick = 0;
 	while (*format)
 	{
 		if (*format == '%')
@@ -54,7 +58,10 @@ int		parse_str_printf(const char *format, va_list arg, t_bone *elem, int len)
 			len = parse_arg(arg, elem, tick);
 			if (elem->hex)
 				free(elem->hex);
-			tick += len;
+			if (elem->type == 'n')
+				tick = len;
+			 else
+				tick += len;
 			format = e;
 		}
 		else
@@ -65,13 +72,13 @@ int		parse_str_printf(const char *format, va_list arg, t_bone *elem, int len)
 		format += *format ? 1 : 0;
 	}
 	return (tick);
-}	
+}
 
 int		ft_printf(const char *format, ...)
 {
-	int			len;	
+	int			len;
 	va_list		arg;
-	t_bone		*elem;	
+	t_bone		*elem;
 
 	len = 0;
 	elem = (t_bone *)malloc(sizeof(t_bone));

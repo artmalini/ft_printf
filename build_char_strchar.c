@@ -71,8 +71,8 @@ char	*utf_char_len_concat(wchar_t *symb, int len)
 char	*utf_char_find_len_concat(wchar_t *c)
 {
 	int			len;
-	char 		*str;
-	wchar_t		*symb;	
+	char		*str;
+	wchar_t		*symb;
 
 	len = 0;
 	symb = c;
@@ -86,13 +86,11 @@ char	*utf_char_find_len_concat(wchar_t *c)
 	return (str);
 }
 
-
-char 	*build_char(va_list arg, t_bone *elem)
+char	*build_char(va_list arg, t_bone *elem)
 {
-	char 		*str;
+	char	*str;
 
 	str = NULL;
-	
 	if (elem->mod_l != -1 && elem->mod_l == 2 && MB_CUR_MAX > 1)
 		str = utf_char_unicode((wchar_t)va_arg(arg, wint_t));
 	else
@@ -104,9 +102,9 @@ char 	*build_char(va_list arg, t_bone *elem)
 	return (str);
 }
 
-char 	*build_str_char(va_list arg, t_bone *elem)
+char	*build_str_char(va_list arg, t_bone *elem)
 {
-	char 	*str;
+	char	*str;
 
 	str = NULL;
 	if (elem->mod_l != -1 && elem->mod_l == 2)
