@@ -16,10 +16,8 @@
 void	fill_flag(const char **f, t_bone *elem)
 {
 	int		flag;
-	//int		zero;
 
 	flag = 0;
-	//zero = 0;
 	while (**f == '+' || **f == ' ' || **f == '-' || **f == '0' || **f == '#')
 	{
 		if (**f == '+')
@@ -34,21 +32,12 @@ void	fill_flag(const char **f, t_bone *elem)
 			elem->left = 1;
 			elem->padding = ' ';
 			if (elem->minus == -1 && flag == 0)
-			{
 				elem->minus = 1;
-			}
-			//if (elem->hex)
-			//	elem->minus = -1;
-
-			//else
-			//	elem->minus = 0;
 		}
 		else if (**f == '0')
 		{
 			elem->padding = (elem->left == 0 ? '0' : elem->padding);
-			//zero++;
-			//if (elem->minus == 1)
-			//	elem->minus = 2;
+			g_eflag++;
 		}
 		else if (**f == '#')
 		{
@@ -58,16 +47,10 @@ void	fill_flag(const char **f, t_bone *elem)
 			elem->hex = ft_strdup("#");
 			flag++;
 			elem->hash = '#';
-			//if (zero != 0)
-			//	elem->padding = ' ';
-			//if (elem->minus == 0)
-			//	elem->minus = -1;
-			//else
-			//	elem->minus = 1;
+			g_eflag++;
 		}
 		(*f)++;
 	}
-	//printf("fill elem->hex %s\n", elem->hex);
 }
 
 void	fill_width(const char **format, va_list arg, t_bone *elem)
@@ -86,7 +69,6 @@ void	fill_width(const char **format, va_list arg, t_bone *elem)
 	if (**format >= '1' && **format <= '9')
 	{
 		elem->width = 0;
-		//elem->minus = 1;
 		while (**format >= '0' && **format <= '9')
 		{
 			elem->width = elem->width * 10 + **format - '0';
@@ -101,7 +83,6 @@ void	fill_precis(const char **format, va_list arg, t_bone *elem)
 	while (**format == '.')
 	{
 		elem->precis = 0;
-		//elem->minus = 1;
 		(*format)++;
 		if (**format == '*')
 		{
@@ -119,8 +100,6 @@ void	fill_precis(const char **format, va_list arg, t_bone *elem)
 		{
 			while (**format >= '0' && **format <= '9')
 			{
-				//if (**format >= '1')
-					//elem->minus = 1;
 				elem->precis = elem->precis * 10 + **format - '0';
 				(*format)++;
 			}

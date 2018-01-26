@@ -61,8 +61,6 @@ void	fill_length(const char **format, t_bone *elem)
 			elem->mod_l = 5;
 		if ((**format == 'z' || **format == 't') && is_present(6, elem))
 			elem->mod_l = 6;
-		if ((**format == 't') && is_present(6, elem))
-			elem->mod_l = 6;
 		(*format)++;
 	}
 	fill_flag(format, elem);
@@ -100,7 +98,7 @@ void	fill_hex(const char **format, t_bone *elem)
 		else if (**format && ft_strchr("XA", **format))
 			elem->hex = ft_strdup("0X");
 		else if (**format == 'b')
-			elem->hex = ft_strdup("0b");
+			elem->hex = ft_strdup("0b");		
 		else
 			elem->hex = NULL;
 	}

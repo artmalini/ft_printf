@@ -170,7 +170,7 @@ char	*prf_itoa_base(t_bone *elem, uintmax_t bighigh)
 		//*(itoa + len) = 0;
 	if (!(itoa = ft_memalloc(len + 1)))
 		return (NULL);
-	//printf("elem->flag %c\n", elem->flag);
+	//printf("elem->flag %c g_zero %d\n", elem->flag, g_zero);
 	//printf("*itoa fir %s len %d bighigh %ju elem->hex %s elem->precis %d elem->minus %d elem->width %d elem->flag %d\n", itoa, len, bighigh, elem->hex, elem->precis, elem->minus, elem->width, elem->flag);
 	while (i < len && check_val(elem, tmpbig, big))
 	{

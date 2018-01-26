@@ -62,4 +62,6 @@ int					print_str_with_flags(char *str, t_bone *elem, int str_len);
 char				*str_join_float(char *str1, char *str2);
 char				*ft_strlendup(const char *str1, int len);
 
+int					g_eflag;
+
 #endif

@@ -50,13 +50,13 @@ char		*advanc_floats(t_bone *elem, long double nbr, char *str, int nmbase)
 	else
 		while ((nbr && nbr / l < 1) && ++tick)
 			l /= nmbase;
-	str = build_mantissa(elem, tmp_nbr / l);
-	if (!str)
+	if (!(str = build_mantissa(elem, tmp_nbr / l)))
 		return (NULL);
 	nbr = build_float(elem, tmp_nbr / l);
 	if (elem->precis == -1 && (tick != 0 && nmbase == 2 && nbr > 0))
 		str = str_join_float(str, ft_strdup("."));
 	str = str_join_float(str, build_float_join_str(elem, nbr));
+	str = g_eflag == 2 ? str_join_float(str, ft_strdup(".")) : str;
 	str = suffix_ep(str, tmp_nbr, nmbase);
 	if (tick < 10 && nmbase != 2)
 		str = str_join_float(str, ft_strdup("0"));

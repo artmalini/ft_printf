@@ -15,6 +15,7 @@
 
 void	struct_init(t_bone *elem)
 {
+	g_eflag = 0;
 	elem->mod_l = -1;
 	elem->type = -1;
 	elem->hex = NULL;

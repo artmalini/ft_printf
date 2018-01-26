@@ -61,12 +61,16 @@ long double		fix_droby(t_bone *elem, long double nbr, int i)
 		if (fix_droby_float(elem->base, first) < .5)
 		{
 			first -= fix_droby_float(elem->base, first);
-			first += .1;
+			if (!ft_strchr("eE", elem->type))
+				first += .1;
 		}
 		else if (fix_droby_float(elem->base, first) >= .5)
 		{
 			first -= fix_droby_float(elem->base, first);
-			first += 1.1;
+			//printf("first %Lf\n", first);
+			if (!ft_strchr("eE", elem->type))
+				first += 1.1;
+			//printf("first %Lf\n", first);
 		}
 		while (++i < elem->precis)
 			first /= elem->base;
@@ -111,9 +115,9 @@ char			*build_mantissa(t_bone *elem, long double nbr)
 		val *= elem->base;
 	while (val >= 1)
 	{
-		printf("nbr nbr %Lf\n", nbr);
+		//printf("nbr nbr %Lf\n", nbr);
 		i = (uintmax_t)(nbr / val);
-		printf("yep i %ju\n", i);
+		//printf("yep i %ju\n", i);
 		if (i == 9223372036854775808U)
 		{
 			//printf("yep\n");
