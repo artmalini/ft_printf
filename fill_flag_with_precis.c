@@ -15,39 +15,27 @@
 
 void	fill_flag(const char **f, t_bone *elem)
 {
-	int		flag;
-
-	flag = 0;
 	while (**f == '+' || **f == ' ' || **f == '-' || **f == '0' || **f == '#')
 	{
 		if (**f == '+')
-		{
-			elem->pls = 1;
 			elem->flag = '+';
-		}
 		else if (**f == ' ')
 			elem->flag = (elem->flag == 0 ? ' ' : elem->flag);
 		else if (**f == '-')
 		{
 			elem->left = 1;
 			elem->padding = ' ';
-			if (elem->minus == -1 && flag == 0)
+			if (elem->minus == -1 && g_flag == 0)
 				elem->minus = 1;
 		}
 		else if (**f == '0')
-		{
 			elem->padding = (elem->left == 0 ? '0' : elem->padding);
-			g_eflag++;
-		}
 		else if (**f == '#')
 		{
-			if (elem->hex)
-				free(elem->hex);
-			elem->hex = NULL;
+			hex_free(elem);
 			elem->hex = ft_strdup("#");
-			flag++;
-			elem->hash = '#';
-			g_eflag++;
+			g_flag++;
+			elem->sign = '#';
 		}
 		(*f)++;
 	}
@@ -86,14 +74,10 @@ void	fill_precis(const char **format, va_list arg, t_bone *elem)
 		(*format)++;
 		if (**format == '*')
 		{
-			elem->precisz = 1;
 			elem->precis = va_arg(arg, int);
-			elem->minus = 0;			
+			elem->minus = 0;
 			if (elem->precis < 0)
-			{
 				elem->precis = -1;
-				elem->precisz = -1;
-			}
 			(*format)++;
 		}
 		else

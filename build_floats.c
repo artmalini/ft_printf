@@ -13,14 +13,18 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-void		xx_upper(char *str)
+char		*xx_upper(char *s)
 {
+	char	*str;
+
+	str = s;
 	while (*str != '\0')
 	{
 		if (*str >= 'a' && *str <= 'p')
 			*str -= 32;
 		str++;
 	}
+	return (s);
 }
 
 char		*suffix_ep(char *str, long double tmp_nbr, int nmbase)
@@ -50,20 +54,18 @@ char		*advanc_floats(t_bone *elem, long double nbr, char *str, int nmbase)
 	else
 		while ((nbr && nbr / l < 1) && ++tick)
 			l /= nmbase;
-	if (!(str = build_mantissa(elem, tmp_nbr / l)))
+	if (!(str = build_mantissa(elem, tmp_nbr / l, 1)))
 		return (NULL);
 	nbr = build_float(elem, tmp_nbr / l);
 	if (elem->precis == -1 && (tick != 0 && nmbase == 2 && nbr > 0))
 		str = str_join_float(str, ft_strdup("."));
 	str = str_join_float(str, build_float_join_str(elem, nbr));
-	//str = g_eflag == 2 ? str_join_float(str, ft_strdup(".")) : str;
 	str = suffix_ep(str, tmp_nbr, nmbase);
 	if (tick < 10 && nmbase != 2)
 		str = str_join_float(str, ft_strdup("0"));
 	elem->base = 10;
-	str = str_join_float(str, prf_itoa_base(elem, tick));
-	(elem->xx == 1) ? xx_upper(str) : str;
-	return (str);
+	str = str_join_float(str, prf_itoa_base(elem, tick, 1));
+	return ((elem->xx == 1) ? xx_upper(str) : str);
 }
 
 /*
@@ -77,12 +79,11 @@ char		*build_float_str(t_bone *elem, long double nbr, char *str)
 	nmbase = (ft_strchr("aA", elem->type) ? 2 : elem->base);
 	if (elem->type && ft_strchr("fF", elem->type))
 	{
-		str = build_mantissa(elem, nbr);
+		str = build_mantissa(elem, nbr, 1);
 		if (!str)
 		{
 			str = ft_strdup("inf");
-			(ft_strchr("F", elem->type)) ? xx_upper(str) : str;
-			return (str);
+			return ((ft_strchr("F", elem->type)) ? xx_upper(str) : str);
 		}
 		nbr = build_float(elem, nbr);
 		str = str_join_float(str, build_float_join_str(elem, nbr));
@@ -92,14 +93,9 @@ char		*build_float_str(t_bone *elem, long double nbr, char *str)
 		str = advanc_floats(elem, nbr, str, nmbase);
 		if (!str)
 		{
-			if (elem->hex)
-			{
-				free(elem->hex);
-				elem->hex = NULL;
-			}
+			hex_free(elem);
 			str = ft_strdup("inf");
-			(elem->xx == 1) ? xx_upper(str) : str;
-			return (str);
+			return ((elem->xx == 1) ? xx_upper(str) : str);
 		}
 	}
 	return (str);

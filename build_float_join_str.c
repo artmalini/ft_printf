@@ -28,11 +28,11 @@ char	*build_float_join_str(t_bone *elem, long double nbr)
 		if (j == 1 && nbr >= .55)
 			i++;
 		if (i != -2147483648)
-			str = str_join_float(str, prf_itoa_base(elem, i));
+			str = str_join_float(str, prf_itoa_base(elem, i, 1));
 		else
 		{
 			elem->precis = j;
-			return (str_join_float(str, prf_itoa_base(elem, nbr)));
+			return (str_join_float(str, prf_itoa_base(elem, nbr, 1)));
 		}
 		nbr *= elem->base;
 		nbr -= i;

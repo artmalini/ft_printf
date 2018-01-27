@@ -33,8 +33,8 @@ int		is_present(int i, t_bone *elem)
 
 /*
 **				The length modifier
-**			hh 	h 	l 	ll 	L 	j 	z
-** mask		0	1	2	3	4	5	6
+**			hh 	h 	l 	ll 	L 	j 	z t
+** mask		0	1	2	3	4	5	 6
 */
 
 void	fill_length(const char **format, t_bone *elem)
@@ -98,7 +98,7 @@ void	fill_hex(const char **format, t_bone *elem)
 		else if (**format && ft_strchr("XA", **format))
 			elem->hex = ft_strdup("0X");
 		else if (**format == 'b')
-			elem->hex = ft_strdup("0b");		
+			elem->hex = ft_strdup("0b");
 		else
 			elem->hex = NULL;
 	}

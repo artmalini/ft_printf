@@ -15,7 +15,7 @@
 
 void	struct_init(t_bone *elem)
 {
-	g_eflag = 0;
+	g_flag = 0;
 	elem->mod_l = -1;
 	elem->type = -1;
 	elem->hex = NULL;
@@ -26,10 +26,8 @@ void	struct_init(t_bone *elem)
 	elem->width = 0;
 	elem->minus = -1;
 	elem->precis = -1;
-	elem->precisz = -1;
 	elem->prefix = 0;
-	elem->hash = 0;
-	elem->pls = 0;
+	elem->sign = 0;
 	elem->xx = 0;
 }
 
@@ -57,19 +55,15 @@ int		parse_str_printf(const char *format, va_list arg, t_bone *elem, int len)
 			e = format + 1;
 			build_flags(&e, arg, elem);
 			len = parse_arg(arg, elem, tick);
-			if (elem->hex)
-				free(elem->hex);
+			hex_free(elem);
 			if (elem->type == 'n')
 				tick = len;
-			 else
+			else
 				tick += len;
 			format = e;
 		}
 		else
-		{
-			write(1, &(*format), 1);
-			tick++;
-		}
+			tick += prf_putchar(*format);
 		format += *format ? 1 : 0;
 	}
 	return (tick);

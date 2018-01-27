@@ -33,7 +33,7 @@ int		prf_nbr_putchar(char c, int nbr)
 {
 	int		len;
 
-	len = 0;	
+	len = 0;
 	while (nbr > 0)
 	{
 		write(1, &c, 1);

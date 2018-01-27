@@ -42,7 +42,8 @@ int		print_str_with_flags(char *str, t_bone *elem, int nb)
 		len += elem->hex ? prf_putstr(elem->hex) : 0;
 	}
 	if (!ft_strcmp("(null)", str))
-		prf_print_str_ln(str, elem->precis != -1 ? ft_strlen(str) - elem->precis : ft_strlen(str));
+		prf_print_str_ln(str, elem->precis != -1 ?
+			ft_strlen(str) - elem->precis : ft_strlen(str));
 	else
 		prf_print_str_ln(str, ft_strlen(str));
 	if (elem->left)

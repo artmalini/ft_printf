@@ -186,7 +186,10 @@ int 		main(void)
 	ft_printf("|   -5.e-01|%#10.e|\n", -0.5);
 	ft_printf("|-1.E+03   |%+-#10.E|\n", -1024.05);
 
-	/*ft_printf("1|| |%.0hhu|\n", 1024);
+	printf("%#.o\n", 42);
+	ft_printf("%#.o\n", 42);
+
+	ft_printf("1|| |%.0hhu|\n", 1024);
 	ft_printf("2| 1024|% .0d|\n", 1024);
 
 	ft_printf("3| | |% .0hhd|\n", 1024);
@@ -263,8 +266,8 @@ int 		main(void)
 	ft_printf("|blackbird  |%n\n", &k);
 	printf("My k %d\n", k);
 
-	i = ft_printf("|%05.4hhx|%n\n", -25, &k);
-	printf("My k %d i %d\n", k, i);*/
+	i = ft_printf("|%05.4hhx|%n\n", -25, &k);	
+	printf("My k %d i %d\n", k, i);
 
 
 	/*ft_printf("1|(nu |%.3s |\n", NULL);

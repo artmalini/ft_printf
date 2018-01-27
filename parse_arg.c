@@ -34,7 +34,8 @@ int		s_type(va_list arg, t_bone *elem, char *str, int len)
 {
 	str = build_str_char(arg, elem);
 	if (!ft_strcmp("(null)", str))
-		len += elem->precis != -1 ? ft_strlen(str) - elem->precis : ft_strlen(str);
+		len += elem->precis != -1 ? ft_strlen(str) - elem->precis :
+				ft_strlen(str);
 	else
 		len += ft_strlen(str);
 	len += print_str_with_flags(str, elem, len);
@@ -59,6 +60,7 @@ int		parse_arg(va_list arg, t_bone *elem, int ln)
 {
 	int		len;
 	char	*str;
+
 	len = 0;
 	str = NULL;
 	if (elem->type && ft_strchr("cC", elem->type))

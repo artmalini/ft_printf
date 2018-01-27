@@ -66,14 +66,7 @@ long double		fix_droby(t_bone *elem, long double nbr, int i)
 		else if (fix_droby_float(elem->base, first) >= .5)
 		{
 			first -= fix_droby_float(elem->base, first);
-			//printf("first %Lf\n", first);
-			//if (ft_strchr("eE", elem->type) && elem->flag == '-')
-			//	first += .1;
-			//else if (ft_strchr("eE", elem->type) && elem->flag == 0)
-			//	first += 1;
-			//else
 			first += 1.1;
-			//printf("first %Lf\n", first);
 		}
 		while (++i < elem->precis)
 			first /= elem->base;
@@ -103,31 +96,26 @@ long double		build_float(t_bone *elem, long double droby)
 	return (nbr);
 }
 
-char			*build_mantissa(t_bone *elem, long double nbr)
+char			*build_mantissa(t_bone *elem, long double nbr, long double val)
 {
-	long double		val;
 	uintmax_t		i;
 	int				tmp;
 	char			*str;
 
 	tmp = elem->precis;
-	val = 1;
 	str = ft_memalloc(sizeof(str));
 	elem->precis = 0;
 	while (val < nbr / elem->base)
 		val *= elem->base;
 	while (val >= 1)
 	{
-		//printf("nbr nbr %Lf\n", nbr);
 		i = (uintmax_t)(nbr / val);
-		//printf("yep i %ju\n", i);
 		if (i == 9223372036854775808U)
 		{
-			//printf("yep\n");
 			free(str);
 			return (NULL);
 		}
-		str = str_join_float(str, prf_itoa_base(elem, i));
+		str = str_join_float(str, prf_itoa_base(elem, i, 1));
 		nbr -= i * val;
 		val /= elem->base;
 	}
